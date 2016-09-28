@@ -11,7 +11,11 @@
 $logName = "AMPSystems"
 $eventSources = @("AMP Systems","AMP SQL Report","AMP Backup Report")
 
-# Create the log
-New-EventLog -LogName $logName -Source $eventSources
-# The log doesn't actually exist until we create our first event here
-Write-EventLog -LogName $logName -Source $eventSources[0] -Message "$logName event log created $(Get-Date -f yyyy-MM-dd)" -EventID 001 -EntryType Information
+# Create log only if it does not already exist
+If (!([System.Diagnostics.EventLog]::Exists("$logName")))
+{
+	# Create the log
+	New-EventLog -LogName $logName -Source $eventSources
+	# The log doesn't actually exist until we create our first event here
+	Write-EventLog -LogName $logName -Source $eventSources[0] -Message "$logName event log created $(Get-Date -f yyyy-MM-dd)" -EventID 001 -EntryType Information
+}
