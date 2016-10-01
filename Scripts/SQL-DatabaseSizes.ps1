@@ -13,6 +13,9 @@ $eventIDInfo = "1100"
 $eventIDError = "1101"
 $entryType = "Information"
 
+# The task category is 99.99% of the time going to be 0 for "none." If you don't set this, you get complaints from the event log about not having custom categories defined.
+$category = 0
+
 # Report file path
 $reportPath = "$Env:SystemDrive/AMP/Reports/SQLDatabases-$(Get-Date -f yyyy-MM-dd).txt"
 
@@ -52,7 +55,7 @@ ForEach ($Instance in (Get-WmiObject -Class Win32_Service -ComputerName $Env:Com
 			{
 			$entryType = "Error"
 			$message = "$($currentDatabase.Database | Out-String) is at $($currentDatabase.SizeLimit | Out-String) of maximum size"
-			Write-EventLog -LogName $logName -Source $eventSource -EventID $eventIDError -EntryType $entryType -Message $message
+			Write-EventLog -LogName $logName -Source $eventSource -EventID $eventIDError -EntryType $entryType -Message $message -Category $category
 			}
 		}
 
@@ -65,4 +68,4 @@ ForEach ($Instance in (Get-WmiObject -Class Win32_Service -ComputerName $Env:Com
 }
 $myDatabases | Out-File $reportPath
 $message = Get-Content $reportPath | Format-Table -AutoSize | Out-String
-Write-EventLog -LogName $logName -Source $eventSource -EventID $eventIDInfo -EntryType "Information" -Message $message
+Write-EventLog -LogName $logName -Source $eventSource -EventID $eventIDInfo -EntryType "Information" -Message $message -Category $category
