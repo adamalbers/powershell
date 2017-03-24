@@ -28,7 +28,7 @@ $myDatabases = @()
 # Create variable to hold event messages
 $message = ""
 
-ForEach ($Instance in (Get-WmiObject -Class Win32_Service -ComputerName $Env:ComputerName | Where {$_.Name -like 'MSSQL$*'}))
+ForEach ($Instance in (Get-WmiObject -Class Win32_Service -ComputerName $Env:ComputerName | Where-Object {$_.Name -like 'MSSQL$*'}))
 {
 	If ($Instance -eq $null){break}
         # Connect to SQL
@@ -38,7 +38,7 @@ ForEach ($Instance in (Get-WmiObject -Class Win32_Service -ComputerName $Env:Com
         # Gather information
         ForEach ($Database in $Sql.Databases)
         {
-	        $currentDatabase = "" | Select Instance, Database, DatabaseSizeGB, SizeLimit
+	        $currentDatabase = "" | Select-Object Instance, Database, DatabaseSizeGB, SizeLimit
        		$currentDatabase.Instance = $InstanceString
         	$currentDatabase.Database = $Database.Name
         	$currentDatabase.DatabaseSizeGB = [Math]::Round($Database.Size/1024,2)
