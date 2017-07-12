@@ -57,6 +57,8 @@ Function Connect-Office365 {
 #Delete old transcripts
 DeleteOldTranscripts
 
+Clear-Host
+
 #Settings specific to running as admin
 & {
   $wid=[System.Security.Principal.WindowsIdentity]::GetCurrent()
