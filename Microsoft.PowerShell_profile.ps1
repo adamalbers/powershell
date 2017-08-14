@@ -24,7 +24,7 @@ if (!(Test-Path $transcriptPath))
 }
 
 #Start a transcript to record all activity in this PowerShell session
-Start-Transcript -Path $Env:SystemDrive/AMP/Transcripts/powershell-$(Get-Date -Format yyyy-MM-dd-HH.mm.ss).txt -Append
+Start-Transcript -Path $transcriptPath/powershell-$(Get-Date -Format yyyy-MM-dd-HH.mm.ss).txt -Append
 
 #Functions
 
@@ -57,9 +57,13 @@ Function Connect-Office365 {
 #Delete old transcripts
 DeleteOldTranscripts
 
+<<<<<<< HEAD
 Clear-Host
 
 #Settings specific to running as admin
+=======
+#Post a warning about running as admin and delete transcripts created by SYSTEM user
+>>>>>>> f9e503585207967bbd8d27de4f1a54cf8df5d067
 & {
   $wid=[System.Security.Principal.WindowsIdentity]::GetCurrent()
   $prp=New-Object System.Security.Principal.WindowsPrincipal($wid)
