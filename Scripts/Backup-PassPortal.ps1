@@ -15,9 +15,22 @@ $passphrasePath = "$Env:SystemDrive/AMP/Passwords/ocularPassphrase.txt"
 $zipPasswordPath = "$Env:SystemDrive/AMP/Passwords/zipPassword.txt"
 $emailAddress = "adam@ampsysllc.com"
 $country = "United States"
-$backupFilePath = "$Env:SystemDrive/Shares/Administration/ocularBackup.csv"
+$backupFilePath = "$Env:SystemDrive\Shares\Administration\ocularBackup.csv"
 $password = Get-Content $passwordPath | ConvertTo-SecureString
 $passphrase = Get-Content $passphrasePath | ConvertTo-SecureString
 $zipPassword = Get-Content $zipPasswordPath | ConvertTo-SecureString
 
-Start-Process -FilePath $utilityPath -ArgumentList EMAIL="$emailAddress" PASSWORD="$password" PASSPHRASE="$passphrase" COUNTRY="$country" EXTRACTFILEPATH="backupFilePath" ZIPFILEPASSWORD="$zipPassword"
+# User BSTR to convert the Secure String to regular strings that Pass Portal utility can understand
+
+$BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($password)
+$password = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+
+$BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($passphrase)
+$passphrase = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+
+$BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($zipPassword)
+$zipPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+
+# Run backup utility to save file
+$argumentList = "EMAIL=$emailAddress PASSWORD=$password PASSPHRASE=$passphrase COUNTRY=$country EXTRACTFILEPATH=$backupFilePath ZIPFILEPASSWORD=$zipPassword"
+Start-Process $utilityPath -ArgumentList $argumentList
