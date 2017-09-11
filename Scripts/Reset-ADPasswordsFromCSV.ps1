@@ -1,3 +1,5 @@
+# Quick script made for client to reset passwords in bulk
+
 Import-Module ActiveDirectory
 
 $csvPath = "$Env:SystemDrive/AMP/Scripts/ADPasswordReset.csv"
