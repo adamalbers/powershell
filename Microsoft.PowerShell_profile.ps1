@@ -41,9 +41,7 @@ Function Connect-Office365 {
 Clear-Host
 
 #Settings specific to running as admin
-=======
 #Post a warning about running as admin and delete transcripts created by SYSTEM user
->>>>>>> f9e503585207967bbd8d27de4f1a54cf8df5d067
 & {
   $wid=[System.Security.Principal.WindowsIdentity]::GetCurrent()
   $prp=New-Object System.Security.Principal.WindowsPrincipal($wid)
