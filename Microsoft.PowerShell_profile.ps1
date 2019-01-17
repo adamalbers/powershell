@@ -32,32 +32,12 @@ Function uptime {
         Get-WmiObject Win32_OperatingSystem | Select-Object @{LABEL='Computer';EXPRESSION={$_.CSName}}, @{LABEL='LastBootUpTime';EXPRESSION={$_.ConverttoDateTime($_.LastBootUpTime)}}
 }
 
-Function DeleteSystemTranscripts {
-        Write-Host "Deleting any transcripts created by the SYSTEM user."
-        $systemTranscripts = Get-ChildItem $transcriptPath | Select-String -Pattern "Username:[^\\]*\\SYSTEM" | Select-Object -ExpandProperty Path
-        ForEach ($systemTranscript in $systemTranscripts) {
-                Remove-Item $systemTranscript -ErrorAction SilentlyContinue
-        }
-}
-
-Function DeleteOldTranscripts {
-        $days = 90
-        Write-Host "Deleting transcripts older than $days days."
-        $oldTranscripts = Get-ChildItem $transcriptPath | Where-Object {$_.LastWriteTime -lt (Get-Date).AddDays(-$days)}
-        ForEach ($oldTranscript in $oldTranscripts) {
-                Remove-Item $oldTranscript -ErrorAction SilentlyContinue
-        }
-}
-
 Function Connect-Office365 {
         $session365 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "https://outlook.office365.com/powershell-liveid/" -Credential (Get-Credential) -Authentication Basic -AllowRedirection
         Import-PSSession $session365
         Write-Host ("`r`nUse 'Remove-PSSession -Id " + $session365.Id + "' to end session.") -ForegroundColor "Yellow"       
 }
-#Delete old transcripts
-DeleteOldTranscripts
 
-<<<<<<< HEAD
 Clear-Host
 
 #Settings specific to running as admin
