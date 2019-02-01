@@ -10,7 +10,7 @@
     Becomes: "DETAILED DESCRIPTION"
     Appears in basic, -full and -detailed
 .NOTES
-    File Name  : Export-MailboxPST.ps1
+    File Name  : Script-Name.ps1
     Author     : Adam Albers
     Appears in -full
 .LINK
@@ -25,13 +25,4 @@
     This would be an example calling the script differently. You can have lots
     and lots, and lots of examples if this is useful.
     Appears in -detailed and -full
-.INPUTTYPE
-   Documentary text, eg:
-   Input type  [Universal.SolarSystem.Planetary.CommonSense]
-   Appears in -full
-.RETURNVALUE
-   Documentary Text, eg:
-   Output type  [Universal.SolarSystem.Planetary.Wisdom]
-   Appears in -full
-.COMPONENT
 #>
