@@ -1,7 +1,19 @@
-# Removes log files from Exchange folders older than X days.
-# This only removes diagnostic logs and has nothing to do with transaction logs.
+<#
+.SYNOPSIS
+   Deletes old Exchange diagnostic logs.
+.DESCRIPTION
+    This script does not touch transaction logs. It only deletes diagnostic logs
+    that tend to fill up drive space.
+.NOTES
+    File Name  : Clear-ExchangeLogs.ps1
+    Author     : Adam Albers
+.LINK
+    https://github.com/adamalbers/powershell
+#>
 
+# Files older than $days will be deleted.
 $days=7
+
 $IISLogPath="$Env:SystemDrive\inetpub\logs\LogFiles\"
 $ExchangeLoggingPath="$Env:SystemDrive\Program Files\Microsoft\Exchange Server\V15\Logging\"
 $ETLLoggingPath="$Env:SystemDrive\Program Files\Microsoft\Exchange Server\V15\Bin\Search\Ceres\Diagnostics\ETLTraces\"
