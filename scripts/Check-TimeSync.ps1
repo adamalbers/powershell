@@ -1,3 +1,14 @@
+<#
+.SYNOPSIS
+    Script verifies PDC time is the time source for domain machines. Outputs results
+    to a txt file.
+.NOTES
+    File Name  : Check-TimeSync.ps1
+    Author     : Adam Albers
+.LINK
+    https://github.com/adamalbers/powershell
+#>
+
 Import-Module ActiveDirectory
 
 # Get domain info so we can check the PDC Emulator, which is the master time server for the domain.
