@@ -5,16 +5,16 @@ $attackerIPs = Get-EventLog -LogName "Security" -InstanceId 4625 -After (Get-Dat
 
 if ($attackerIPs -eq $null) {
     Write-Output "No IPs to ban. Exiting."
-    Set-NetFirewallRule -DisplayName "fail2ban" -Enabled:$false
+    Set-NetFirewallRule -DisplayName "fail2ban" -RemoteAddress "1.2.3.4"
     
     Exit 0    
 }
 
 Write-Output $attackerIPs
 
-# Add $attackerIPs to the fail2ban firewall rule. This replaces all existing IPs in the rule and thus unbans IPs after the 10 minute Window.
+# Add $attackerIPs to the fail2ban firewall rule. This replaces all existing IPs in the rule and thus unbans IPs after the 10 minute window.
 if (Get-NetFirewallRule -DisplayName "fail2ban") {
-    Set-NetFirewallRule -DisplayName "fail2ban" -RemoteAddress $($attackerIPs.Name) -Enabled:$true
+    Set-NetFirewallRule -DisplayName "fail2ban" -RemoteAddress $($attackerIPs.Name)
     
 	Exit 0
 }
