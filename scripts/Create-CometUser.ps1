@@ -1,3 +1,5 @@
+#Import-Module $env:SyncroModule
+
 # Enter Comet server info here
 $adminUsername = "admin"
 $adminPassword = "admin"
@@ -15,6 +17,9 @@ if (($cometUsername -eq $null) -or ($cometPassword -eq $null)) {
 	Write-Output "Please populate the Comet Backups User and Comet Backups Password fields in the customer custom fields before running this script."
 	Exit 1
 }
+
+# Force TLS 1.2 encryption for the web requests
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 # Establish Comet API authentication
 $cometAuth = @{
@@ -88,6 +93,7 @@ if ($response.Status -eq $null) {
 if  ($response.Status -ne $null) {
     Create-CometUser
     Set-CometUserProfile
+    #Log-Activity -Message "Create $cometUsername account on $serverURL" -EventName "Comet User Creation"
 }
 
 Exit 0
