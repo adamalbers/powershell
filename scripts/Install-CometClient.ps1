@@ -2,7 +2,7 @@
 
 $adminUsername = "admin"
 $adminPassword = "admin"
-$server = "https://backups.example.com:443" # You really only need the port if it's not 443
+$server = "backups.example.com:443" # You really only need the port if it's not 443
 $serviceName = "backup.delegate"
 $command = "$Env:Temp\install.exe /CONFIGURE=${cometUsername}:${cometPassword}"
 $zipPath = "$Env:Temp\comet.zip"
