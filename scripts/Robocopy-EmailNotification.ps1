@@ -21,7 +21,7 @@ $smtpPort = "587"
 # Load Robocopy Arguments
 # See https://technet.microsoft.com/en-us/library/cc733145.aspx for options
 # If you use /COPYALL you must Run As Administrator
-$options = @("/R:0","/W:0","/ZB","/LOG+:$Logfile","/TEE","/COPYALL","/E")
+$options = @("/R:0","/W:0","/ZB","/LOG+:$Logfile","/TEE","/COPYALL","/E","/XO","/SL","/MT")
 $robocopyArgs = @($SourceFolder,$DestinationFolder,$FileList,$Options)
   
 # Run robocopy
