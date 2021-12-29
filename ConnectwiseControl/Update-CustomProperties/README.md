@@ -1,3 +1,9 @@
+<style>
+    .responsive {
+  width: 100%;
+  height: auto;
+}
+</style>
 # Update-CustomProperties
 
 ## Create Edit Session Only Role
@@ -9,12 +15,10 @@
 <br>
 <br>
 
-![Edit Session Only Role][edit-session-only-role]
-![Security Roles][security-roles]
+| Create Role | Verify Role |
+| --- | --- |
+| <img alt="Create Role" src="images/edit-session-only-role.png" class="responsive"> | <img alt="Verify Role" src="images/security-roles.png" class="responsive"> |
 
-[edit-session-only-role]:	images/edit-session-only-role.png
-
-[security-roles]: images/security-roles.png
 <br>
 <br>
 
@@ -25,9 +29,6 @@
 <br>
 <br>
 
-![Example User][exampleUser]
-![Internal Users][internal-users]
-
-[exampleUser]: images/exampleUser.png
-
-[internal-users]: images/internal-users.png
+| Create User | Verify User |
+| --- | --- |
+| <img alt="Create User" src="images/exampleUser.png" class="responsive"> | <img alt="Verify User" src="images/internal-users.png" class="responsive">
