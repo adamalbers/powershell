@@ -1,10 +1,10 @@
-<style>
-    .responsive {
-  width: 100%;
-  height: auto;
-}
-</style>
 # Update-CustomProperties
+This script is intended to be run from your RMM. It will edit the custom properties of assets in your Connectwise Control server. You can then create a session group in Control to automatically organize all your endpoints.
+
+![Session Group All Clients](images/subgroup-expressions.png)
+
+<br>
+<br>
 
 ## Create Edit Session Only Role
 1. Create a new role and name it Edit Session Only.
@@ -17,7 +17,7 @@
 
 | Create Role | Verify Role |
 | --- | --- |
-| <img alt="Create Role" src="images/edit-session-only-role.png" class="responsive"> | <img alt="Verify Role" src="images/security-roles.png" class="responsive"> |
+| ![Create Role](images/edit-session-only-role.png) | ![Verify Role](images/security-roles.png) |
 
 <br>
 <br>
@@ -31,4 +31,4 @@
 
 | Create User | Verify User |
 | --- | --- |
-| <img alt="Create User" src="images/exampleUser.png" class="responsive"> | <img alt="Verify User" src="images/internal-users.png" class="responsive">
+| ![Create User](images/exampleUser.png) | ![Verify User](images/internal-users.png)
