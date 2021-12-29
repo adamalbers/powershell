@@ -1,7 +1,7 @@
 # Update-CustomProperties
 This script is intended to be run from your RMM. It will edit the custom properties of assets in your Connectwise Control server. You can then create a session group in Control to automatically organize all your endpoints.
 
-<img alt="Session group with subgroup expressions." src="images/subgroup-expressions.png" style="max-width: 50%">
+!["Session Group"](images/subgroup-expressions.png)
 
 <br>
 <br>
