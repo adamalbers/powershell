@@ -1,2 +1,5 @@
-This is a respository for my PowerShell scripts and one-liners.
-Be sure to read each script or one-liner before you run it.
+# Powershell Scripts & One-liners
+This is a collection of one-liners and scripts I've created or collected.
+It is very much a work in progress.
+
+Original authors are credited where their code was used.
