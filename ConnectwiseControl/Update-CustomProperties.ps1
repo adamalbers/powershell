@@ -21,7 +21,7 @@ The script will figure out $controlGUID and $operatingSystem if needed.
 # HTTPS IS REQUIRED
 $server = 'http://example.domain.com'
 
-# Instance ID is the string inside the () of the Windows service.
+# Instance ID is the string inside the () of the Windows service name.
 # E.g. ScreenConnect Client (111aaa222bbb333ccc)
 $instanceID = '111aaa222bbb333ccc'
 
