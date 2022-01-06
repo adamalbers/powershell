@@ -28,7 +28,7 @@ e.g https://$syncroSubdomain.syncromsp.com/asset_types/84342/asset_fields
 $syncroAssetTypeID = '84342'
 ##### END SyncroMSP Settings #####
 
-#### DO NOT CHANGE ANYTHING BELOW HERE ####
+########## DO NOT CHANGE ANYTHING BELOW HERE ##########
 
 ##### BEGIN Connectwise Control Functions #####
 # Make sure $controlServer has HTTPS
