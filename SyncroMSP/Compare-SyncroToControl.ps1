@@ -58,7 +58,7 @@ function connectToControl {
 
 function getComputers {
     $body = '[2,["All Machines"],"",null,null,null]'
-    $controlResponse = Invoke-RestMethod -Headers $($controlServerConnection.Headers) -Method POST -Uri 'https://help.ampsysllc.com/Services/PageService.ashx/GetHostSessionInfo' -Body $body
+    $controlResponse = Invoke-RestMethod -Headers $($controlServerConnection.Headers) -Method POST -Uri "$controlServer/Services/PageService.ashx/GetHostSessionInfo" -Body $body
     return $controlResponse.sessions | Sort-Object Name
 }
 
