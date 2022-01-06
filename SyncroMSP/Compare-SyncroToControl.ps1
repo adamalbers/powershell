@@ -5,20 +5,20 @@ This script compares a list of computers from Connectwise Control to SyncroMSP.
 It produces a CSV of computers that are present in CWC but NOT in SyncroMSP.
 #>
 
-$pathtoCSVReport = "$Env:HOME\Downloads\missingFromSyncro.csv"
+$pathtoCSVReport = "$Env:HOME\Downloads\missingFromSyncro-$(Get-Date -Format yyyy-MM-dd).csv"
 ##### BEGIN Connectwise Control Settings #####
 # HTTPS IS REQUIRED
 $controlServer = 'https://example.domain.com'
 
 # This should be a read-only user in Control.
-$controlUsername = 'readOnlyUser'
-$controlPassword = 'superSecretLongPassword'
+$controlUsername = 'exampleUser'
+$controlPassword = 'SuperLongSuperSecretPassword'
 ##### END Connectwise Control Settings #####
 
 ##### BEGIN SyncroMSP Settings #####
-# This should be a read-only API token.
+# Use a read-only API token.
 $syncroSubdomain = 'example'
-$syncroAPIToken = 'aaaaBBBBccccDDDDeeee'
+$syncroAPIToken = 'aaaaaBBBBBcccccDDDDDeeeee'
 <# 
 This is our ID for the asset type Syncro Device. It may be different for other Syncro customers.
 Asset type ID can be found by going to https://$syncroSubdomain.syncromsp.com/asset_types and click Manage Fields.
@@ -30,7 +30,7 @@ $syncroAssetTypeID = '84342'
 
 #### DO NOT CHANGE ANYTHING BELOW HERE ####
 
-##### GET CONTROL SESSIONS #####
+##### BEGIN Connectwise Control Functions #####
 # Make sure $controlServer has HTTPS
 if ($controlServer -notmatch 'https://') {
     Write-Output "`nProvided URL: $controlServer"
@@ -38,10 +38,9 @@ if ($controlServer -notmatch 'https://') {
     Exit 1
 }
 
-# Hide progress to make Invoke-WebRequest a bit faster
-$ProgressPreference = 'SilentlyContinue'
-
 function connectToControl {
+    # Hide progress to make Invoke-WebRequest a bit faster
+    $ProgressPreference = 'SilentlyContinue'
     $controlCredentials = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("$($controlUsername):$($controlPassword)"))
     $headers = @{
         'authorization' = "Basic $controlCredentials"
@@ -61,22 +60,16 @@ function connectToControl {
     }
 }
 
-function getComputers {
+function getControlSessions {
+    Write-Host -ForegroundColor Green "Getting sessions from Connectwise Control..."
     $body = '[2,["All Machines"],"",null,null,null]'
     $controlResponse = Invoke-RestMethod -Headers $($controlServerConnection.Headers) -Method POST -Uri "$controlServer/Services/PageService.ashx/GetHostSessionInfo" -Body $body
     return $controlResponse.sessions | Sort-Object Name
 }
 
-Write-Host -ForegroundColor Green "Getting sessions from Connectwise Control..."
-connectToControl
-$controlSessions = getComputers
+##### END Connectwise Control Functions #####
 
-$controlCompanies = $controlSessions | ForEach-Object { $_.CustomPropertyValues[0] } | Select-Object -Unique | Sort-Object
-
-Remove-Variable -Name controlServerConnection
-
-
-###### GET SYNCRO ASSETS ######
+###### BEGIN SyncroMSP Functions ######
 $headers = @{
     "Authorization" = "$syncroAPIToken"
     "Accept" = "application/json"
@@ -84,7 +77,7 @@ $headers = @{
 
 $syncroURLBase = "https://$syncroSubdomain.syncromsp.com/api/v1"
 
-function getAssets {
+function getSyncroAssets {
     $url = "$syncroURLBase/customer_assets`?asset_type_id=$syncroAssetTypeID"
 
     $syncroResponse = Invoke-RestMethod -Method GET -Headers $headers -Uri $url
@@ -112,46 +105,62 @@ function getAssets {
 
     return $syncroAssets
 }
+##### END SyncroMSP Functions #####
 
-$syncroAssets = getAssets
-
-$syncroCustomers = $syncroAssets.customer.business_then_name | Select-Object -Unique | Sort-Object 
-
-##### COMPARE CONTROL SESSIONS AND SYNCRO ASSETS #####
+##### BEGIN Comparison Functions #####
 # Compare the customer lists and select matching companies
-$mutualCompanies = @()
-foreach ($company in $syncroCustomers) {
-    if ($controlCompanies -contains $company) {
-        $mutualCompanies += $company
-    }
-}
-
-# Get the Control sessions for companies that exist in both Syncro and Control
-$filteredControlSessions = @()
-foreach ($session in $controlSessions) {
-    if ($mutualCompanies -contains $($session.CustomPropertyValues[0])) {
-        $filteredControlSessions += $session
-    }
-}
-
-# Find assets that exist in Control but not in Syncro
-$missingAssets = New-Object System.Collections.Generic.List[System.Object]
-
-foreach ($asset in $filteredControlSessions) {
-    if ($($syncroAssets.properties.'ScreenConnect GUID') -notcontains $($asset.SessionID)) {
-        $missingAsset = [PSCustomObject]@{
-            Company     = "$($asset.CustomPropertyValues[0])"
-            Name        = "$($asset.Name)"
-            Site        = "$($asset.CustomPropertyValues[1])"
-            Department  = "$($asset.CustomPropertyValues[2])"
-            Type        = "$($asset.CustomPropertyValues[3])"
-            OS          = "$($asset.GuestOperatingSystemName)"
+function getMutualCompanies {
+    $mutualCompanies = @()
+        foreach ($company in $syncroCustomers) {
+            if ($controlCompanies -contains $company) {
+                $mutualCompanies += $company
         }
-        
-        $missingAssets.Add($missingAsset)
-    }
+    } return $mutualCompanies
 }
 
+function filterControlSessions {
+    # Get the Control sessions for companies that exist in both Syncro and Control
+    $filteredControlSessions = @()
+    foreach ($session in $controlSessions) {
+        if ($mutualCompanies -contains $($session.CustomPropertyValues[0])) {
+            $filteredControlSessions += $session
+        }
+    } return $filteredControlSessions
+}
+
+function findMissingAssets {
+    # Find assets that exist in Control but not in Syncro
+    $missingAssets = New-Object System.Collections.Generic.List[System.Object]
+
+    foreach ($asset in $filteredControlSessions) {
+        if ($($syncroAssets.properties.'ScreenConnect GUID') -notcontains $($asset.SessionID)) {
+            $missingAsset = [PSCustomObject]@{
+                Company     = "$($asset.CustomPropertyValues[0])"
+                Name        = "$($asset.Name)"
+                Site        = "$($asset.CustomPropertyValues[1])"
+                Department  = "$($asset.CustomPropertyValues[2])"
+                Type        = "$($asset.CustomPropertyValues[3])"
+                OS          = "$($asset.GuestOperatingSystemName)"
+            }
+        
+            $missingAssets.Add($missingAsset)
+        }
+    } return $missingAssets
+}
+##### END Comparions Functions #####
+
+##### EXECUTION SECTION #####
+connectToControl
+$controlSessions = getControlSessions
+$controlCompanies = $controlSessions | ForEach-Object { $_.CustomPropertyValues[0] } | Select-Object -Unique | Sort-Object
+
+$syncroAssets = getSyncroAssets
+$syncroCustomers = $syncroAssets.customer.business_then_name | Select-Object -Unique | Sort-Object
+
+$mutualCompanies = getMutualCompanies
+$filteredControlSessions = filterControlSessions
+
+$missingAssets = findMissingAssets
 $missingAssets | Sort-Object Company | Export-Csv $pathtoCSVReport -NoTypeInformation
 
 Exit 0
