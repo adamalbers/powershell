@@ -19,7 +19,12 @@ $controlPassword = 'superSecretLongPassword'
 # This should be a read-only API token.
 $syncroSubdomain = 'example'
 $syncroAPIToken = 'aaaaBBBBccccDDDDeeee'
-# This is our ID for the asset type Syncro Device. It may be different for other Syncro customers.
+<# 
+This is our ID for the asset type Syncro Device. It may be different for other Syncro customers.
+Asset type ID can be found by going to https://$syncroSubdomain.syncromsp.com/asset_types and click Manage Fields.
+After clicking Manage Fields, you can see the asset type ID in the URL.
+e.g https://$syncroSubdomain.syncromsp.com/asset_types/84342/asset_fields
+#>
 $syncroAssetTypeID = '84342'
 ##### END SyncroMSP Settings #####
 
