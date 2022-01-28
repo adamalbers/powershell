@@ -1,9 +1,9 @@
 $email = 'alerts@example.com'
 
-# These variables come from our RMM but you should uncomment and set them here if running manually.
-# Currently this script only does verification using Cloudflare DNS with an API Token.
-# Choose LE_STAGE for testing or LE_PROD for a real cert.
+# Currently this script only verification using Cloudflare DNS with an API Token or HTTP if $apiToken is null.
 
+# These variables come from our RMM but you should uncomment and set them here if running manually.
+# Choose LE_STAGE for testing or LE_PROD for a real cert.
 # $leServerType = 'LE_STAGE'
 # $certNames = @('www.example.com','example.com', 'www2.example.com')
 # $apiToken = 'superSecretLongAPIToken'
@@ -13,15 +13,19 @@ $email = 'alerts@example.com'
 
 ##### DO NOT MODIFY BELOW THIS LINE #####
 
-if ((-not $certNames) -or (-not $apiToken)) {
-    Write-Output '$certNames and $apiToken are required. Exiting.'
+if (-not $certNames) {
+    Write-Output '$certNames are required. Exiting.'
     Exit 1
 }
 
-# We send a comma separated string from our RMM so we parse it here.
+# We send a comma or newline separated list from our RMM so we parse it here.
 # This won't have any effect if you set $certNames manually above.
 $certNameList = @()
-$certNameList = $certNames.Split(',')
+if ($certNames -contains ',') {
+    $certNameList = $certNames.Split(',')
+} else {
+    $certNameList = $certNames.Split([Environment]::NewLine)
+}
 
 # Set Powershell to use TLS 1.2 as required by Install-PackageProvider and Install-Module
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
@@ -44,18 +48,52 @@ Import-Module RemoteDesktopServices
 # Choose LE production or staging server
 Set-PAServer $leServerType
 
-# Get certificate from LE with Cloudflare DNS challenge
-$pluginArgs = @{
-	CFToken = $( $apiToken | ConvertTo-SecureString -AsPlainText -Force)
+# Add API token to pluginArgs if token was provided or use HTTP verification if not.
+if ($apiToken) {
+    $plugin = 'Cloudflare'
+    $pluginArgs = @{
+	    CFToken = $( $apiToken | ConvertTo-SecureString -AsPlainText -Force)
+    }
+} else {
+    $plugin = 'WebRoot'
+    $webRootPath = (Get-Website -Name 'Default Web Site').PhysicalPath
+    $webRootPath = $webRootPath.Replace('%SystemDrive%',"$Env:SystemDrive")
+    $pluginARgs = @{
+        WRPath = "$webRootPath"
+    }
 }
-if ($(Get-PAOrder -List -ErrorAction 'SilentlyContinue').Name -contains $certNames) {
-    Set-PAOrder $certNames
+
+# Check if there is an existing cert.
+if ($(Get-PAOrder -List).Name -contains $certNameList[0]) {
+    $expiryDate = (Get-PAOrder -Name $($certNameList[0])).CertExpires
+    $timespan = New-TimeSpan -Start (Get-Date) -End $expiryDate
+    if ($($timespan.Days) -gt 30) {
+        Write-Output "$($certNameList[0]) cert expires: $expiryDate"
+        Write-Output "Found certificate but it is more than 30 days out from renewal. Exiting."
+        Exit 0
+    }
+    
+    Set-PAOrder $certNameList[0]
+    Write-Output "Found $($certNameList[0]). Running renewal."
     $cert = Submit-Renewal
 } else {
-    $cert = New-PACertificate $certNameList -AcceptTOS -Contact $email -Plugin Cloudflare -PluginArgs $pluginArgs -Install
+    Write-Output "Requesting new certificate."
+    $cert = New-PACertificate $certNameList -AcceptTOS -Contact $email -Plugin $plugin -PluginArgs $pluginArgs -Install
 }
 
 Write-Output $cert | Format-List
+
+# Exit before the deployment steps if LE_PROD is not selected.
+if ($leServerType -ne 'LE_PROD') {
+    Write-Output '$leServerType is NOT LE_PROD. Exiting without any deployment.'
+    Exit 0
+}
+
+# Exit before the deployment steps if cert was not eligible to be renewed.
+if ($cert -match 'is not recommended for renewal yet') {
+    Write-Output "Cert is not close enough to renewal date to be renewed. Exiting without any deployment."
+    Exit 0
+}
 
 # Deploy cert to Remote Desktop Services if selected
 if ($deployToRDS -eq 'yes') {
@@ -73,7 +111,7 @@ if ($deployToExchange -eq 'yes') {
 }
 
 # Deploy cert to IIS if selected
-if ($deployToIIS) {
+if ($deployToIIS -eq 'yes') {
     Write-Output "Enabling $($cert.Name) on IIS Default Web Site."
     $cert | Set-IISCertificate -SiteName 'Default Web Site' -RemoveOldCert
 }
