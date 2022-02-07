@@ -1,6 +1,7 @@
 $csvFolder = "C:\Example"
 
 Connect-MsolService
+$myTenantID = ((Get-MsolAccountSku)[0].AccountObjectID).toString()
 $tenants = Get-MsolPartnerContract
 
 $allUsers = @()
@@ -49,6 +50,8 @@ function getUsers {
     
     return $users
 }
+
+$allUsers += getUsers $myTenantID
 
 foreach ($tenant in $tenants) {
     $allUsers += getUsers $tenant
