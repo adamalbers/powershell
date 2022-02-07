@@ -44,7 +44,7 @@ function disconnectExchangeOnline {
 
 foreach ($customer in $customers) {
     connectExchangeOnline $customer
-    enableAdminAuitLog $customer
+    enableAdminAuditLog $customer
     disconnectExchangeOnline $customer
     
     Write-Host "Sleeping 5 seconds before moving on to next tenant. `n`n"
