@@ -27,9 +27,6 @@ function enableAdminAuditLog {
     Write-Host "Enabling Unified Audit Log and mailbox audit logs for $($thisCustomer.DisplayName)."
     Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true
     Set-OrganizationConfig -AuditDisabled $false
-    Write-Host "Setting audit age limit for mailboxes to 365 days."
-    $mailboxes = Get-Mailbox -ResultSize Unlimited
-    $mailboxes | Set-Mailbox -AuditEnabled $true -AuditLogAgeLimit 365 -DefaultAuditSet Admin,Delegate,Owner
 }
 
 function disconnectExchangeOnline {
