@@ -12,7 +12,7 @@ function connectExchangeOnline {
     param (
         $thisCustomer
     )
-    Write-Output "Connecting to $($thisCustomer.DisplayName)`n"
+    Write-Host "Connecting to $($thisCustomer.DisplayName)`n"
     Connect-ExchangeOnline -UserPrincipalName $userPrincipalName -DelegatedOrganization "$($thisCustomer.CustomerContextId)" -ShowBanner:$false -ErrorAction 'SilentlyContinue'
 
 }
@@ -24,8 +24,12 @@ function enableAdminAuditLog {
     if ((Get-OrganizationConfig).IsDehydrated -eq $true) {
         Enable-OrganizationCustomization -Confirm:$false
     }
-    Write-Output "Enabling Admin Audit Log for $($thisCustomer.DisplayName)."
+    Write-Host "Enabling Unified Audit Log and mailbox audit logs for $($thisCustomer.DisplayName)."
     Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true
+    Set-OrganizationConfig -AuditDisabled $false
+    Write-Host "Setting audit age limit for mailboxes to 365 days."
+    $mailboxes = Get-Mailbox -ResultSize Unlimited
+    $mailboxes | Set-Mailbox -AuditEnabled $true -AuditLogAgeLimit 365 -DefaultAuditSet Admin,Delegate,Owner
 }
 
 function disconnectExchangeOnline {
@@ -33,7 +37,7 @@ function disconnectExchangeOnline {
         $thisCustomer
     )
     
-    Write-Output "Disconnecting from $($thisCustomer.DisplayName)"
+    Write-Host "Disconnecting from $($thisCustomer.DisplayName)"
     Disconnect-ExchangeOnline -Confirm:$false
 }
 
@@ -43,7 +47,7 @@ foreach ($customer in $customers) {
     enableAdminAuitLog $customer
     disconnectExchangeOnline $customer
     
-    Write-Output "Sleeping 5 seconds before moving on to next tenant. `n`n"
+    Write-Host "Sleeping 5 seconds before moving on to next tenant. `n`n"
     Start-Sleep -Seconds 5
 }
 
