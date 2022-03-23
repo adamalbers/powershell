@@ -1,4 +1,8 @@
-$auditLogPath = 'AuditLog_2021-12-01_2022-02-19.csv'
+$auditLogPath = '/path/to/example.csv'
+
+### DO NOT CHANGE ANYTHING BELOW THIS LINE ###
+
+$outputPath = $auditLogPath.Replace('.csv','-Parsed.csv')
 
 $auditData = (Import-Csv $auditLogPath).AuditData | ConvertFrom-Json
 
@@ -42,3 +46,9 @@ foreach ($data in $auditData) {
 
     $dataArray.Add($dataObject) | Out-Null
 }
+
+$dataArray | Export-Csv $outputPath -NoTypeInformation
+
+Write-Host -ForegroundColor Green "Done. See $outputPath for results."
+
+Exit 0
