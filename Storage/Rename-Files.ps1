@@ -11,7 +11,6 @@ $fileList = Get-ChildItem -Path $directoryPath
 Set-Location $directoryPath
 
 # Rename files
-foreach ($file in $fileList)
-{
-    Rename-Item $file.Name $($file.Name).Replace($oldText,$newText)
+foreach ($file in $fileList) {
+    Rename-Item $file.Name $($file.Name).Replace($oldText, $newText)
 }

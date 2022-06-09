@@ -19,23 +19,23 @@ if ($osVersion -match "11") {
 
 $registryObjects += [PSCustomObject]@{
     KeyPath = 'HKLM:/SOFTWARE/Policies/Microsoft/Windows/WindowsUpdate'
-    Name = 'ProductVersion'
-    Type = 'String'
-    Value = 'Windows 10'
+    Name    = 'ProductVersion'
+    Type    = 'String'
+    Value   = 'Windows 10'
 }
 
 $registryObjects += [PSCustomObject]@{
     KeyPath = 'HKLM:/SOFTWARE/Policies/Microsoft/Windows/WindowsUpdate'
-    Name = 'TargetReleaseVersion'
-    Type = 'DWord'
-    Value = '1'
+    Name    = 'TargetReleaseVersion'
+    Type    = 'DWord'
+    Value   = '1'
 }
 
 $registryObjects += [PSCustomObject]@{
     KeyPath = 'HKLM:/SOFTWARE/Policies/Microsoft/Windows/WindowsUpdate'
-    Name = 'TargetReleaseVersionInfo'
-    Type = 'String'
-    Value = '21H1'
+    Name    = 'TargetReleaseVersionInfo'
+    Type    = 'String'
+    Value   = '21H1'
 }
 
 foreach ($registryObject in $registryObjects) {

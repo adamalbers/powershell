@@ -5,13 +5,13 @@ $daysToKeep = 3
 
 # Add folders to be cleaned
 $foldersToClean = @("$Env:SystemDrive\Windows\SoftwareDistribution\*",
-                    "$Env:SystemDrive\Windows\Temp\*",
-                    "$Env:SystemDrive\Users\*\AppData\Local\Temp\*",
-                    "$Env:SystemDrive\Users\*\AppData\Local\Microsoft\Windows\Temporary Internet Files\*",
-                    "$Env:SystemDrive\inetpub\logs\LogFiles\*")
+    "$Env:SystemDrive\Windows\Temp\*",
+    "$Env:SystemDrive\Users\*\AppData\Local\Temp\*",
+    "$Env:SystemDrive\Users\*\AppData\Local\Microsoft\Windows\Temporary Internet Files\*",
+    "$Env:SystemDrive\inetpub\logs\LogFiles\*")
 
 function diskSize {
-    Get-CimInstance Win32_LogicalDisk | Where-Object { $_.DriveType -eq "3" } | Select-Object SystemName, @{ Name = "Drive" ; Expression = { ( $_.DeviceID ) } }, @{ Name = "Size (GB)" ; Expression = {"{0:N1}" -f( $_.Size / 1gb)}}, @{ Name = "FreeSpace (GB)" ; Expression = {"{0:N1}" -f( $_.Freespace / 1gb ) } }, @{ Name = "PercentFree" ; Expression = {"{0:P1}" -f( $_.FreeSpace / $_.Size ) } } | Format-Table -AutoSize | Out-String
+    Get-CimInstance Win32_LogicalDisk | Where-Object { $_.DriveType -eq "3" } | Select-Object SystemName, @{ Name = "Drive" ; Expression = { ( $_.DeviceID ) } }, @{ Name = "Size (GB)" ; Expression = { "{0:N1}" -f ( $_.Size / 1gb) } }, @{ Name = "FreeSpace (GB)" ; Expression = { "{0:N1}" -f ( $_.Freespace / 1gb ) } }, @{ Name = "PercentFree" ; Expression = { "{0:P1}" -f ( $_.FreeSpace / $_.Size ) } } | Format-Table -AutoSize | Out-String
 }
 
 $sizeBefore = diskSize                    
@@ -23,7 +23,7 @@ Get-Service -Name wuauserv | Stop-Service -Force
 # Delete files older than $daysToKeep in $foldersToClean
 Get-ChildItem -Path $foldersToClean -Recurse -Force | Where-Object { ($_.LastWriteTime -lt $(Get-Date).AddDays(-$daysToKeep)) } | Remove-Item -Force -Recurse -Confirm:$false    
 
-$sizeAfter =  diskSize
+$sizeAfter = diskSize
 Write-Output "Size After Cleaning: $sizeAfter"
 
 # Restart the Windows Update Service

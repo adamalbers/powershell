@@ -17,18 +17,17 @@
 
 # Get the last boot time. More accurate than the uptime number in Resource Monitor.
 Function uptime {
-        Get-WmiObject Win32_OperatingSystem | Select-Object @{LABEL='Computer';EXPRESSION={$_.CSName}}, @{LABEL='LastBootUpTime';EXPRESSION={$_.ConverttoDateTime($_.LastBootUpTime)}}
+  Get-WmiObject Win32_OperatingSystem | Select-Object @{LABEL = 'Computer'; EXPRESSION = { $_.CSName } }, @{LABEL = 'LastBootUpTime'; EXPRESSION = { $_.ConverttoDateTime($_.LastBootUpTime) } }
 }
 
 # Settings specific to running as admin
 # Post a warning about running as admin.
 & {
-  $wid=[System.Security.Principal.WindowsIdentity]::GetCurrent()
-  $prp=New-Object System.Security.Principal.WindowsPrincipal($wid)
-  $adm=[System.Security.Principal.WindowsBuiltInRole]::Administrator
-  $IsAdmin=$prp.IsInRole($adm)
-  If ($IsAdmin)
-  {
+  $wid = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+  $prp = New-Object System.Security.Principal.WindowsPrincipal($wid)
+  $adm = [System.Security.Principal.WindowsBuiltInRole]::Administrator
+  $IsAdmin = $prp.IsInRole($adm)
+  If ($IsAdmin) {
     Write-Host "RUNNING AS ADMIN. USE CAUTION." -ForegroundColor "Red"
   }
 }

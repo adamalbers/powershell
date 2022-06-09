@@ -24,7 +24,8 @@ if (-not $certNames) {
 $certNameList = @()
 if ($certNames -contains ',') {
     $certNameList = $certNames.Split(',')
-} else {
+}
+else {
     $certNameList = $certNames.Split([Environment]::NewLine)
 }
 
@@ -34,11 +35,11 @@ $certNameList = $certNameList | Where-Object { -not [string]::IsNullOrWhiteSpace
 # Set Powershell to use TLS 1.2 as required by Install-PackageProvider and Install-Module
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
 if (-not (Get-PackageProvider -Name NuGet -ErrorAction 'SilentlyContinue')) {
-	Install-PackageProvider -Name NuGet -Confirm:$false -Force
+    Install-PackageProvider -Name NuGet -Confirm:$false -Force
 }
 
 if (-not (Get-Module -Name Posh-ACME -ErrorAction 'SilentlyContinue')) {
-	Install-Module -Name Posh-ACME -Confirm:$false -Force -Scope AllUsers
+    Install-Module -Name Posh-ACME -Confirm:$false -Force -Scope AllUsers
 }
 
 if (-not (Get-Module -Name Posh-ACME.Deploy -ErrorAction 'SilentlyContinue')) {
@@ -55,12 +56,13 @@ Set-PAServer $leServerType
 if ($apiToken) {
     $plugin = 'Cloudflare'
     $pluginArgs = @{
-	    CFToken = $( $apiToken | ConvertTo-SecureString -AsPlainText -Force)
+        CFToken = $( $apiToken | ConvertTo-SecureString -AsPlainText -Force)
     }
-} else {
+}
+else {
     $plugin = 'WebRoot'
     $webRootPath = (Get-Website -Name 'Default Web Site').PhysicalPath
-    $webRootPath = $webRootPath.Replace('%SystemDrive%',"$Env:SystemDrive")
+    $webRootPath = $webRootPath.Replace('%SystemDrive%', "$Env:SystemDrive")
     $pluginARgs = @{
         WRPath = "$webRootPath"
     }
@@ -84,7 +86,8 @@ if ($(Get-PAOrder -List).Name -contains $certNameList[0]) {
     Set-PAOrder $certNameList[0]
     Write-Output "Found $($certNameList[0]). Running renewal."
     $cert = Submit-Renewal
-} else {
+}
+else {
     Write-Output "Requesting new certificate for domain(s):"
     Write-Output $certNameList
     $cert = New-PACertificate $certNameList -AcceptTOS -Contact $email -Plugin $plugin -PluginArgs $pluginArgs -Install
@@ -124,11 +127,13 @@ if ($deployToExchange -eq 'yes') {
 if ($deployToIIS -eq 'yes') {
     if (-not $iisSites) {
         $iisSitesList = 'Default Web Site'
-    } else {
+    }
+    else {
         $iisSites = @()
         if ($iisSites -contains ',') {
             $iisSitesList = $iisSites.Split(',')
-        } else {
+        }
+        else {
             $iisSitesList = $iisSites.Split([Environment]::NewLine)
         }
     }

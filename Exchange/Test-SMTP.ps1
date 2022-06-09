@@ -19,16 +19,15 @@ Subject: Telnet SMTP Test
 This is a test message send via telnet in order to test SMTP.
 "@
 
-$commands = @("HELO $sendingMailServer","MAIL FROM: <$mailFrom>","RCPT TO: <$rcptTo>","DATA","$data",".","QUIT")
+$commands = @("HELO $sendingMailServer", "MAIL FROM: <$mailFrom>", "RCPT TO: <$rcptTo>", "DATA", "$data", ".", "QUIT")
 
 function readResponse {
 
-   while($stream.DataAvailable)  
-      {  
-         $read = $stream.Read($buffer, 0, 1024)    
-         Write-Output ($encoding.GetString($buffer, 0, $read)) | Tee-Object -Append -FilePath $logFile
-         Start-Sleep -Seconds 1
-      } 
+   while ($stream.DataAvailable) {  
+      $read = $stream.Read($buffer, 0, 1024)    
+      Write-Output ($encoding.GetString($buffer, 0, $read)) | Tee-Object -Append -FilePath $logFile
+      Start-Sleep -Seconds 1
+   } 
 }
 
 $socket = New-Object System.Net.Sockets.TcpClient($receivingMailServer, $port) 

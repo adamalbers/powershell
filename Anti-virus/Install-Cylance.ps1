@@ -25,7 +25,7 @@ else {
 
 # Attempt to uninstall any existing Cylance
 if ((Get-Service CylanceSvc)) {
-    $cylanceGUID = Get-WmiObject -Class win32_Product | Where-Object {$_.Name -match "Cylance PROTECT"} | Select-Object -ExpandProperty IdentifyingNumber
+    $cylanceGUID = Get-WmiObject -Class win32_Product | Where-Object { $_.Name -match "Cylance PROTECT" } | Select-Object -ExpandProperty IdentifyingNumber
     Start-Process -FilePath "$Env:systemroot\system32\msiexec.exe" -ArgumentList "/x $cylanceGUID /qn /norestart /L*v $Env:Temp\cylance-uninstall.log" -Wait
 }
 

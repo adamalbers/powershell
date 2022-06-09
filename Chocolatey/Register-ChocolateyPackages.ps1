@@ -50,8 +50,8 @@ $chocolateyPackageList = [System.Collections.ArrayList](Get-Content "$chocoListP
 
 # Remove the lines of the list that are not actual package names
 ForEach ($package in $chocolateyPackageList) {
-   if (!($package -like "*chocolatey*" -or $package -like "*packages installed*" -or $package -like "*automatically sync*" -or $package -like "*package synchronizer*")) {
-         createPackage("$package")
+    if (!($package -like "*chocolatey*" -or $package -like "*packages installed*" -or $package -like "*automatically sync*" -or $package -like "*package synchronizer*")) {
+        createPackage("$package")
     }
 }
 

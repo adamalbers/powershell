@@ -14,8 +14,8 @@ $defaultPolicyID = "fffffff-ffff-ffff-1111-fffffffff"
 
 # Exit script if either cometUsername or cometPassword are not populated in RMM (or defined above).
 if (($null -eq $cometUsername) -or ($null -eq $cometPassword)) {
-	Write-Output "Please populate the Comet Backups User and Comet Backups Password fields in the customer custom fields before running this script."
-	Exit 1
+    Write-Output "Please populate the Comet Backups User and Comet Backups Password fields in the customer custom fields before running this script."
+    Exit 1
 }
 
 # Force TLS 1.2 encryption for the web requests
@@ -23,9 +23,9 @@ if (($null -eq $cometUsername) -or ($null -eq $cometPassword)) {
 
 # Establish Comet API authentication
 $cometAuth = @{
-	Username = "$adminUsername";
-	AuthType = "Password";
-	Password = "$adminPassword"
+    Username = "$adminUsername";
+    AuthType = "Password";
+    Password = "$adminPassword"
 }
 
 # Get Comet user profile to see if account already exists on Comet server
@@ -33,8 +33,8 @@ function Get-CometUserProfile {
     $apiMethod = "/api/v1/admin/get-user-profile"
     $url = "${serverURL}${apiMethod}"
     $body = $cometAuth + @{
-	TargetUser ="$cometUsername"	
-}
+        TargetUser = "$cometUsername"	
+    }
     $getResponse = Invoke-RestMethod -Uri $url -Method POST -Body $body
 
     return $getResponse
@@ -48,7 +48,7 @@ function Set-CometUserProfile {
     $apiMethod = "/api/v1/admin/set-user-profile"
     $url = "${serverURL}${apiMethod}"
     $body = $cometAuth + @{
-        TargetUser="$cometUsername"
+        TargetUser  = "$cometUsername"
         ProfileData = $cometProfile
     }
 
@@ -65,8 +65,8 @@ function New-CometUser {
     $apiMethod = "/api/v1/admin/add-user"
     $url = "${serverURL}${apiMethod}"
     $body = $cometAuth + @{
-        TargetUser = "$cometUsername"
-        TargetPassword = "$cometPassword"
+        TargetUser        = "$cometUsername"
+        TargetPassword    = "$cometPassword"
         StoreRecoveryCode = "1"
     }
 
@@ -90,7 +90,7 @@ if ($null -eq $response.Status) {
     Exit 0
 }
 
-if  ($null -ne $response.Status) {
+if ($null -ne $response.Status) {
     New-CometUser
     Set-CometUserProfile
     #Log-Activity -Message "Create $cometUsername account on $serverURL" -EventName "Comet User Creation"

@@ -24,10 +24,11 @@ if ($operatingSystem -eq $null) {
 }
 
 if ($operatingSystem -match "Server") {
-    		$deviceType = "Server"
-		} else {
-			$deviceType = "Workstation"
-		}
+    $deviceType = "Server"
+}
+else {
+    $deviceType = "Workstation"
+}
 
 # Install only if the box is checked to enable server or workstation install.
 if (($serverInstall -eq "yes" -and $deviceType -eq "Server") -or ($workstationInstall -eq "yes" -and $deviceType -eq "Workstation")) {

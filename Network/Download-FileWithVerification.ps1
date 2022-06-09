@@ -21,10 +21,10 @@ $browseButton.Location = '23,50'
 
 $folderBrowser = New-Object System.Windows.Forms.FolderBrowserDialog
 $browseButton.Add_Click({
-    $folderBrowser.ShowDialog()
-    $pathTextBox.Text = $folderBrowser.SelectedPath
-    $pathTextBox.ReadOnly = $true
-})
+        $folderBrowser.ShowDialog()
+        $pathTextBox.Text = $folderBrowser.SelectedPath
+        $pathTextBox.ReadOnly = $true
+    })
 
 $hashTypeLabel = New-Object System.Windows.Forms.Label
 $hashTypeLabel.Location = '23,100'
@@ -53,7 +53,7 @@ $sha256RadioButton.Size = '80,20'
 $sha256RadioButton.Checked = $false
 $sha256RadioButton.Text = 'SHA256'
 
-$hashTypesGroupBox.controls.AddRange(@($md5RadioButton,$sha1RadioButton,$sha256RadioButton))
+$hashTypesGroupBox.controls.AddRange(@($md5RadioButton, $sha1RadioButton, $sha256RadioButton))
 
 $urlLabel = New-Object System.Windows.Forms.Label
 $urlLabel.Location = '20,150'
@@ -76,7 +76,7 @@ $downloadForm.AcceptButton = $downloadButton
 
 
 
-$downloadForm.Controls.AddRange(@($pathTextLabel,$pathTextBox,$browseButton,$hashTypeLabel,$hashTypesGroupBox,$cancelButton,$downloadButton))
+$downloadForm.Controls.AddRange(@($pathTextLabel, $pathTextBox, $browseButton, $hashTypeLabel, $hashTypesGroupBox, $cancelButton, $downloadButton))
 $downloadForm.ShowDialog()
 
 
@@ -84,9 +84,11 @@ $downloadForm.ShowDialog()
 $hashType = ''
 if ($md5RadioButton.Checked) {
     $hashType = 'MD5'
-} elseif ($sha1RadioButton.Checked) {
+}
+elseif ($sha1RadioButton.Checked) {
     $hashType = 'SHA1'
-} elseif ($sha256RadioButton.Checked) {
+}
+elseif ($sha256RadioButton.Checked) {
     $hashType = 'SHA256'
 }
 

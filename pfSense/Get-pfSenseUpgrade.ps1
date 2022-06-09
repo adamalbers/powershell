@@ -8,7 +8,8 @@ $privateKeyPath = "$Env:Temp\example.ppk"
 # If pfSense address wasn't provided, use the default gateway IP.
 if (!($pfSenseIPAddresses)) {
     $pfSenseIPAddresses = (Get-NetIPConfiguration).Ipv4DefaultGateway.NextHop
-} else {
+}
+else {
     $pfSenseIPAddresses = $pfSenseIPAddresses.Split([Environment]::NewLine)
 }
 
@@ -32,7 +33,8 @@ foreach ($ipAddress in $pfSenseIPAddresses) {
 
     if ($results -match "Your system is up to date") {
         $upToDate += $ipAddress
-    } else {
+    }
+    else {
         if ($results -match "version of pfSense is available") {
             $upgradeable += $ipAddress
         }

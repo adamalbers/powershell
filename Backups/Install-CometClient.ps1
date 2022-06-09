@@ -19,36 +19,37 @@ if (($cometUsername -eq $null) -or ($cometPassword -eq $null)) {
 }
 
 # Determine 64-bit or 32-bit and set the download URL as such.
-if ((Get-CimInstance -ClassName Cim_OperatingSystem).OSArchitecture -eq "64-bit")
-    {
+if ((Get-CimInstance -ClassName Cim_OperatingSystem).OSArchitecture -eq "64-bit") {
     $downloadURL = "https://${server}/api/v1/admin/branding/generate-client/windows-x86_64-zip"
-    } else {
+}
+else {
     $downloadURL = "https://${server}/api/v1/admin/branding/generate-client/windows-x86_32-zip"
-    }
+}
 
 # Force TLS 1.2 encryption for the web requests
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 # Download the Comet installer zip file
-Invoke-Webrequest -Uri "$downloadURL" -Method POST -Body @{Username="${adminUsername}"; AuthType="Password"; Password="${adminPassword}"} -OutFile $zipPath
+Invoke-Webrequest -Uri "$downloadURL" -Method POST -Body @{Username = "${adminUsername}"; AuthType = "Password"; Password = "${adminPassword}" } -OutFile $zipPath
     
 if (Get-Service $serviceName -ErrorAction SilentlyContinue) {
     if ((Get-Service $serviceName).Status -eq 'Running') {
         # do nothing
         Write-Output "Backup service already installed and running. Exiting."
         Exit 0
-    } else {
+    }
+    else {
         Write-Output "$serviceName found, but it is not running for some reason."
         Write-Output "Attempting to start $servicename."
         Start-Service $serviceName
         Exit 0
     }
-} else {
+}
+else {
     Write-Output "$serviceName not found. Installing."
     
     # Function allows us to unzip the file.
-    function Unzip
-    {
+    function Unzip {
         param([string]$zipFile, [string]$outPath)
         Add-Type -AssemblyName System.IO.Compression.FileSystem
         [System.IO.Compression.ZipFile]::ExtractToDirectory($zipFile, $outPath)

@@ -12,8 +12,7 @@ $downloadList = Get-Content downloadList.txt
 
 $webClient = New-Object System.Net.WebClient
 
-foreach($url in $downloadList) 
-{ 
+foreach ($url in $downloadList) { 
 
 	#Get the filename 
 	$filename = [System.IO.Path]::GetFileName($url)

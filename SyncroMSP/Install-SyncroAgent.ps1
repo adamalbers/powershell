@@ -9,7 +9,8 @@ Invoke-WebRequest -Uri "$installerURL" -OutFile "$installerPath"
 
 try {
     Start-Process msiexec.exe -ArgumentList "/i $installerPath /qn /norestart" -NoNewWindow
-} catch {
+}
+catch {
     Write-Warning $_
     Write-Output "Trying again..."
     Start-Sleep -Seconds 10

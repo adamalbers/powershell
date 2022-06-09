@@ -17,7 +17,7 @@ $pdcEmulator = $domain.PDCEmulator
 
 $pdcSource = w32tm /query /computer:$pdcEmulator /source
 
-$computerList = Get-ADComputer -Filter {Enabled -eq $true} | Where-Object {$_.DNSHostName -ne $pdcEmulator} | Sort-Object Name
+$computerList = Get-ADComputer -Filter { Enabled -eq $true } | Where-Object { $_.DNSHostName -ne $pdcEmulator } | Sort-Object Name
 $mismatchListFile = "$Env:SystemDrive\AMP\Reports\timeSyncMismatch-$(Get-Date -Format yyyy-MM-dd).txt"
 
 ForEach ($computer in $computerList) {

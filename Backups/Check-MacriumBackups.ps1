@@ -12,13 +12,12 @@
 $currentDate = Get-Date
 $pastDueDate = (Get-Date).AddHours(-24)
 $logName = "Macrium Reflect/Operational"
-$eventIDs = 278,290
+$eventIDs = 278, 290
 $backupOverdue = $false
 
-$lastSuccessEvent = Get-WinEvent -FilterHashtable @{LogName=$logName;ID=$eventIDs} -MaxEvents 1
+$lastSuccessEvent = Get-WinEvent -FilterHashtable @{LogName = $logName; ID = $eventIDs } -MaxEvents 1
 
-If ($lastSuccessEvent.TimeCreated -lt $pastDueDate)
-{
+If ($lastSuccessEvent.TimeCreated -lt $pastDueDate) {
     $backupOverdue = $true
 }
 

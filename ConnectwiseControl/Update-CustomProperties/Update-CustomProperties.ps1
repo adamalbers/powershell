@@ -42,7 +42,7 @@ $password = 'SuperSecretAndVeryLongPassword'
 if ($controlGUID -eq $null) {
     [regex]$regex = '&s=.+(?=&k)'
     $controlGUID = $regex.Matches((Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\ScreenConnect Client ($instanceID)").ImagePath)[0].Value
-    $controlGUID = $controlGUID.Replace("&s=","")
+    $controlGUID = $controlGUID.Replace("&s=", "")
     if ($controlGUID -eq $null) {
         Write-Output '$controlGUID is null. Cannot proceed. Please verify Control agent is installed.'
         Exit 1
@@ -56,9 +56,10 @@ if ($operatingSystem -eq $null) {
 
 # Determine if server or workstation based on OS name and change device type accordingly
 if ($operatingSystem -match "Server") {
-	$deviceType = "Server"
-} else {
-	$deviceType = "Workstation"
+    $deviceType = "Server"
+}
+else {
+    $deviceType = "Workstation"
 }
 
 # Make sure $server has HTTPS
@@ -75,18 +76,18 @@ function connectToControl {
     $credentials = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("$($username):$($password)"))
     $headers = @{
         'authorization' = "Basic $credentials"
-        'content-type' = "application/json; charset=utf-8"
-        'origin' = "$server"
+        'content-type'  = "application/json; charset=utf-8"
+        'origin'        = "$server"
     }
 
     $results = Invoke-WebRequest -Uri $headers.origin -Headers $headers -UseBasicParsing
     $regex = [Regex]'(?<=antiForgeryToken":")(.*)(?=","isUserAdministrator)'
     $match = $regex.Match($results.content)
-    if($match.Success){ $headers.'x-anti-forgery-token' = $match.Value.ToString() }
-    else{ Write-Verbose 'Unable to find anti forgery token. Some commands may not work.' }
+    if ($match.Success) { $headers.'x-anti-forgery-token' = $match.Value.ToString() }
+    else { Write-Verbose 'Unable to find anti forgery token. Some commands may not work.' }
 
     $script:serverConnection = @{
-        Server = $server
+        Server  = $server
         Headers = $headers
     }
 }

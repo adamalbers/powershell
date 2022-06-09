@@ -3,7 +3,7 @@ $apiToken = 'aaaaBBBBccccDDDDeeee'
 
 $headers = @{
     "Authorization" = "$apiToken"
-    "Accept" = "*/*"
+    "Accept"        = "*/*"
 }
 
 $urlBase = "https://$subdomain.syncromsp.com/api/v1/"
@@ -76,11 +76,12 @@ if ($customers.Length -gt 1) {
     Write-Host -ForegroundColor Green "`n***Multiple customers found.***"
     $customers | Sort-Object business_name | Select-Object business_name, id | Format-Table
     $customerID = Read-Host "Enter the customer ID you want from the list above: "
-} else {
+}
+else {
     $customerID = $customers[0].id
 }
 
-$tickets = getTickets($customerID) | Where-Object {$_.customer_id -eq $customerID} | Sort-Object number
+$tickets = getTickets($customerID) | Where-Object { $_.customer_id -eq $customerID } | Sort-Object number
 
 $selection = @('number', 'id', 'created_at', 'subject')
 

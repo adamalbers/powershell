@@ -27,5 +27,5 @@ The # around the folder name picks the Calendar folder regardless of translation
 -ExcludeDumpster is important to avoid grabbing the Deleted Items folder.
 #>
 foreach ($mailbox in $mailboxes) {
-	New-MailboxExportRequest $mailbox -FilePath "$pstPath$mailbox.pst" -IncludeFolders "#Calendar#","#Contacts#" -ExcludeDumpster
+    New-MailboxExportRequest $mailbox -FilePath "$pstPath$mailbox.pst" -IncludeFolders "#Calendar#", "#Contacts#" -ExcludeDumpster
 }

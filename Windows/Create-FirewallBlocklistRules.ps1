@@ -1,5 +1,5 @@
 # You may use country names or their ISO2 country code. E.g., North Korea or KP, Russia or RU
-$countriesToBlock = @('China','Russia','Iran','North Korea','Pakistan','Romania','Belarus')
+$countriesToBlock = @('China', 'Russia', 'Iran', 'North Korea', 'Pakistan', 'Romania', 'Belarus')
 
 # The firewall rule names will all be prepnded with $ruleNamePrefix. The 'z' in mine is so they'll be at the bottom alphabetically.
 # Make sure the $ruleNamePrefix is sufficiently distinct as this script will delete and replace the existing rules with this name.
@@ -21,16 +21,18 @@ $countryDB = Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/dr5hn/cou
 foreach ($country in $countriesToBlock) {
     if ($country.Length -eq 2) {
         $iso2 = $country.ToLower()
-        $country = ($countryDB | Where-Object {$_.iso2 -eq "$country"}).Name
-    } else {
-        $iso2 = ($countryDB | Where-Object {$_.Name -match "$country"}).iso2.ToLower()
+        $country = ($countryDB | Where-Object { $_.iso2 -eq "$country" }).Name
+    }
+    else {
+        $iso2 = ($countryDB | Where-Object { $_.Name -match "$country" }).iso2.ToLower()
     }
     
     if ($iso2.Count -ne 1) {
         Write-Warning "More than one ISO2 country code found for `"$country`". Skipping this country."
-    } else {
+    }
+    else {
         Add-Content -Path $blocklistFile -Value "#$country"
-    Invoke-RestMethod -Uri "https://www.ipdeny.com/ipblocks/data/aggregated/$iso2-aggregated.zone" | Add-Content -Path $blocklistFile
+        Invoke-RestMethod -Uri "https://www.ipdeny.com/ipblocks/data/aggregated/$iso2-aggregated.zone" | Add-Content -Path $blocklistFile
     }    
 }
 
@@ -41,8 +43,7 @@ $ranges = Get-Content $blocklistFile | Where-Object { ($_.Trim().Length -ne 0) -
 $rangeCount = $ranges.Count
 
 # Confirm that the InputFile had at least one IP address or IP range to block.
-if ($rangeCount -eq 0) 
-{ 
+if ($rangeCount -eq 0) { 
     "`n$blocklistFile contained no IP addresses to block, quitting...`n"
     Exit 
 }
@@ -60,10 +61,10 @@ $groupsOfRanges = @()
 $numberOfGroups = [math]::Ceiling($ranges.Length / $maxRangesPerRule)
  
 # Separate $ranges into groups of $maxRangesPerRule and store them in $groupsOfRanges
-for($i=0; $i -le $numberOfGroups; $i++){
-    $start = $i*$maxRangesPerRule
-    $end = (($i+1)*$maxRangesPerRule)-1
-    $groupsOfRanges += ,@($ranges[$start..$end])
+for ($i = 0; $i -le $numberOfGroups; $i++) {
+    $start = $i * $maxRangesPerRule
+    $end = (($i + 1) * $maxRangesPerRule) - 1
+    $groupsOfRanges += , @($ranges[$start..$end])
 }
 
 # Delete any existing firewall rules which match the rule name.
@@ -75,7 +76,7 @@ $ruleNumber = 0
 # Create firewall rules
 $groupsOfRanges | ForEach-Object {
     $ruleNumber++
-    $numberString = $ruleNumber.ToString().PadLeft(3,"0")
+    $numberString = $ruleNumber.ToString().PadLeft(3, "0")
 
     $remoteIPs = $_
     

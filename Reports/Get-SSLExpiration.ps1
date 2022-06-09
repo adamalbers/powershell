@@ -12,7 +12,8 @@ $daysToAlert = 700 # Will trigger if certificate expires in this many or fewer d
 if (!($urlList)) {
     Write-Output "No $urlList defined. Exiting."
     Exit 1
-} else {
+}
+else {
     $urlList = $urlList.Split()
 }
 
@@ -58,7 +59,8 @@ if ($expirationList) {
     #Create-Syncro-Ticket-Comment -TicketIdOrNumber $ticket.ticket.id -Subject "Issue" -Body "$expirationList" -Hidden "false" -DoNotEmail "true"
     Write-Output $expirationList
     Exit 0
-} else {
+}
+else {
     Write-Output "No certificates expiring in $daysToAlert or fewer days."
 }
 

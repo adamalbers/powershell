@@ -44,18 +44,18 @@ function connectToControl {
     $controlCredentials = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("$($controlUsername):$($controlPassword)"))
     $headers = @{
         'authorization' = "Basic $controlCredentials"
-        'content-type' = "application/json; charset=utf-8"
-        'origin' = "$controlServer"
+        'content-type'  = "application/json; charset=utf-8"
+        'origin'        = "$controlServer"
     }
 
     $controlResponse = Invoke-WebRequest -Uri $headers.origin -Headers $headers -UseBasicParsing
     $regex = [Regex]'(?<=antiForgeryToken":")(.*)(?=","isUserAdministrator)'
     $match = $regex.Match($controlResponse.content)
-    if($match.Success){ $headers.'x-anti-forgery-token' = $match.Value.ToString() }
-    else{ Write-Verbose 'Unable to find anti forgery token. Some commands may not work.' }
+    if ($match.Success) { $headers.'x-anti-forgery-token' = $match.Value.ToString() }
+    else { Write-Verbose 'Unable to find anti forgery token. Some commands may not work.' }
 
     $script:controlServerConnection = @{
-        Server = $controlServer
+        Server  = $controlServer
         Headers = $headers
     }
 }
@@ -72,7 +72,7 @@ function getControlSessions {
 ###### BEGIN SyncroMSP Functions ######
 $headers = @{
     "Authorization" = "$syncroAPIToken"
-    "Accept" = "application/json"
+    "Accept"        = "application/json"
 }
 
 $syncroURLBase = "https://$syncroSubdomain.syncromsp.com/api/v1"
@@ -111,9 +111,9 @@ function getSyncroAssets {
 # Compare the customer lists and select matching companies
 function getMutualCompanies {
     $mutualCompanies = @()
-        foreach ($company in $syncroCustomers) {
-            if ($controlCompanies -contains $company) {
-                $mutualCompanies += $company
+    foreach ($company in $syncroCustomers) {
+        if ($controlCompanies -contains $company) {
+            $mutualCompanies += $company
         }
     } return $mutualCompanies
 }
@@ -135,12 +135,12 @@ function findMissingAssets {
     foreach ($asset in $filteredControlSessions) {
         if ($($syncroAssets.properties.'ScreenConnect GUID') -notcontains $($asset.SessionID)) {
             $missingAsset = [PSCustomObject]@{
-                Company     = "$($asset.CustomPropertyValues[0])"
-                Name        = "$($asset.Name)"
-                Site        = "$($asset.CustomPropertyValues[1])"
-                Department  = "$($asset.CustomPropertyValues[2])"
-                Type        = "$($asset.CustomPropertyValues[3])"
-                OS          = "$($asset.GuestOperatingSystemName)"
+                Company    = "$($asset.CustomPropertyValues[0])"
+                Name       = "$($asset.Name)"
+                Site       = "$($asset.CustomPropertyValues[1])"
+                Department = "$($asset.CustomPropertyValues[2])"
+                Type       = "$($asset.CustomPropertyValues[3])"
+                OS         = "$($asset.GuestOperatingSystemName)"
             }
         
             $missingAssets.Add($missingAsset)

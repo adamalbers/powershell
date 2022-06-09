@@ -6,7 +6,7 @@ $apiURL = 'https://subdomain.sentinelone.net/web/api/v2.1/agents/actions/initiat
 $apiToken = 'SuperLongSuperSecretAPIToken'
 
 $headers = @{
-    "Authorization" = "apitoken $apiToken"
+  "Authorization" = "apitoken $apiToken"
 }
 
 $body = @"

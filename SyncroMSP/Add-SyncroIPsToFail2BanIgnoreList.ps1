@@ -19,7 +19,7 @@ $jailConfPath = '/home/user/jail.conf.d/jail.conf'
 
 $headers = @{
     "Authorization" = "$syncroAPIToken"
-    "Accept" = "application/json"
+    "Accept"        = "application/json"
 }
 
 $syncroURLBase = "https://$syncroSubdomain.syncromsp.com/api/v1"
@@ -56,7 +56,7 @@ function getSyncroAssets {
 $assets = getSyncroAssets
 
 # Get WAN IPs for every asset in any customer that has the FFP PBX box checked in Syncro.
-$pbxCustomerIPs = ($assets | Where-Object {$_.customer.properties.'FFP PBX (Fusion+Flowroute)' -eq '1'}).properties.kabuto_information.general.ip | Select-Object -Unique | Sort-Object
+$pbxCustomerIPs = ($assets | Where-Object { $_.customer.properties.'FFP PBX (Fusion+Flowroute)' -eq '1' }).properties.kabuto_information.general.ip | Select-Object -Unique | Sort-Object
 
 foreach ($ip in $pbxCustomerIPs) {
     # The leading space before $ip is necessary and is not a typo.

@@ -17,7 +17,8 @@ Write-Host "Deteced Product Type: $productType`n"
 if ($productType -ne '2') {
     Write-Host -ForegroundColor Red "This script is only meant to be run on domain controllers. Exiting.`n"
     Exit 0
-} else {
+}
+else {
     Write-Host "Domain controller detected. Proceeding."
 }
 ###### End Domain Controller Check ######
@@ -26,7 +27,7 @@ Import-Module ActiveDirectory
 
 ###### Start Service Health Checks ######
 Write-Host -ForegroundColor Yellow "`n###### Start Service Health Checks ######"
-$serviceNames = @('dfsr','dns','dnscache','eventsystem','ismserv','kdc','lanmanserver','lanmanworkstation','netlogon','ntds','rpcss','samss','w32time')
+$serviceNames = @('dfsr', 'dns', 'dnscache', 'eventsystem', 'ismserv', 'kdc', 'lanmanserver', 'lanmanworkstation', 'netlogon', 'ntds', 'rpcss', 'samss', 'w32time')
 $services = Get-Service $serviceNames | Sort-Object Name
 
 Write-Host "`nService Status:"
@@ -41,7 +42,8 @@ $services | ForEach-Object {
         $newStatus = (Get-Service $($_.Name)).Status
         if ($newStatus -ne 'Running') {
             Write-Host -ForegroundColor Red "Could not start service. Please troubleshoot."
-        } else {
+        }
+        else {
             Write-Host -ForegroundColor Green "Successfully started $($_.Name)."
         }
     }
@@ -55,13 +57,13 @@ $forest = Get-ADForest
 
 Write-Host "`nForest: $($forest.Name)"
 Write-Host "----------"
-($forest | Select-Object ForestMode,RootDomain,Domains,GlobalCatalogs,DomainNamingMaster,SchemaMaster | Format-List | Out-String).Trim()
+($forest | Select-Object ForestMode, RootDomain, Domains, GlobalCatalogs, DomainNamingMaster, SchemaMaster | Format-List | Out-String).Trim()
 
 $domain = Get-ADDomain
 $domainControllers = Get-ADDomainController -Filter *
 Write-Host "`nDomain: $($domain.DNSRoot)"
 Write-Host "----------"
-($domain | Select-Object Forest,DNSRoot,NetBIOSName,PDCEmulator,RIDMaster,InfrastructureMaster | Format-List | Out-String).Trim()
+($domain | Select-Object Forest, DNSRoot, NetBIOSName, PDCEmulator, RIDMaster, InfrastructureMaster | Format-List | Out-String).Trim()
 
 foreach ($domainController in $domainControllers) {
     $target = $($domainController.HostName)
@@ -73,9 +75,10 @@ foreach ($domainController in $domainControllers) {
         $message = ($results | Out-String).Trim()
         $message
         Rmm-Alert -Category 'ad_replication' -Body "$message"
-        } else {
-            Write-Host "No replication failures found for $target"
-        }
+    }
+    else {
+        Write-Host "No replication failures found for $target"
+    }
 }
 Write-Host -ForegroundColor Yellow "`n###### End Forest and Domain Health Checks ######"
 ###### End Forest and Domain Health Checks ######
@@ -113,10 +116,12 @@ if ($computerName -eq $pdcEmulator) {
         Write-Host "`nNew NTP settings: $newNTPServers"
         Write-Host "New System Date & Time: $(Get-Date)"
         Log-Activity -Message "$logActivityMessage" -EventName "$logActivityEventName" | Out-Null
-    } else {
+    }
+    else {
         Write-Host "`nCurrent w32time NTP server settings are correct!"
     }
-} else {
+}
+else {
     Write-Host -ForegroundColor Yellow "Detected that $computerName is NOT the PDCEmulator. Checking w32time configuration."
     $defaultType = 'NT5DS'
     if ($currentTimeType -ne $defaultType) {
@@ -133,7 +138,8 @@ if ($computerName -eq $pdcEmulator) {
         & w32tm.exe /resync
         Write-Host "`nNew System Date & Time: $(Get-Date)"
         Log-Activity -Message "$logActivityMessage" -EventName "$logActivityEventName" | Out-Null
-    } else {
+    }
+    else {
         Write-Host "`nCurrent w32time configuration is correct."
     }
 }
