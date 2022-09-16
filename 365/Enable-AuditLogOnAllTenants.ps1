@@ -1,3 +1,6 @@
+# This script uses interactive authentication to 365.
+# This script will enable the admin audit policy for each tenant.
+
 Import-Module AzureAD
 Import-Module ExchangeOnlineManagement
 
@@ -48,3 +51,4 @@ foreach ($customer in $customers) {
     Start-Sleep -Seconds 5
 }
 
+Exit 0
