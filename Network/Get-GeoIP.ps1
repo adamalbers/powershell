@@ -1,23 +1,38 @@
-# YOu need an API key from https://freegeoip.app/
-$apiKey = 'superSecretLongAPIKey'
+# Requires https://github.com/maxmind/mmdbinspect for the IP lookups.
 # The IP list file should have one IPv4 or one IPv6 address per line.
-$pathToIPFile = '~/Downloads/ipList.txt'
-#$pathToMMDBInspect = '/opt/homebrew/bin/mmdbinspect'
-#$pathToMaxMindCityDB = '/opt/homebrew/var/GeoIP/GeoLite2-City.mmdb'
-$outputCSVPath = '~/Downloads/ipLocations.csv'
+
+# Copy geoip-example.json to syncro.json and modify as necessary.
+# The .gitignore for this repo will ignore any file name 'geoip.json' so you won't accidentally upload your config to GitHub.
+
+$pathToJSON = "./geoip.json"
 
 ###### DO NOT CHANGE ANYTHING BELOW THIS LINE ######
 
-$ips = Get-Content $pathToIPFile | Select-Object -Unique
+$config = Get-Content $pathToJSON | ConvertFrom-Json -Depth 100
+$pathToIPFile = $($config.pathToIPFile)
+$pathToMMDBInspect = $($config.$pathToMMDBInspect)
+$pathToMaxMindCityDB = $($config.$pathToMaxMindCityDB)
+$pathToMaxMindASNDB = $($config.$pathToMaxMindASNDB)
+$outputPath = $($config.outputPath)
 
-$locations = [System.Collections.ArrayList]::new()
 
-$baseURL = 'https://api.freegeoip.app/json/'
+$ips = Get-Content $pathToIPFile | Select-Object -Unique | Sort-Object
+
+# Overwrite any existing $outputPath with an empty file
+New-Item $outputPath -Force
 
 foreach ($ip in $ips) {
-    $url = "$($baseURL)$($ip)`?apikey=$($apiKey)"
-    $response = Invoke-RestMethod -Uri $url
-    $locations.Add($response) | Out-Null
+    $locationData = & $pathToMMDBInspect -db $pathToMaxMindCityDB -db $pathToMaxMindASNDB $ip | ConvertFrom-Json -Depth 10
+    $location = [PSCustomObject]@{
+        IP       = $locationData[0].Lookup
+        City     = $locationData[0].records.record.city.names.en
+        Country  = $locationData[0].records.record.country.names.en
+        ISO_Code = $locationData[0].records.record.country.iso_code
+        ISP      = $locationData[1].records.record.autonomous_system_organization
+        ASN      = $locationData[1].records.record.autonomous_system_number
+    }
+    
+    $location | Export-Csv $outputPath -NoTypeInformation -Append
 }
 
-$locations | Export-Csv $outputCSVPath -NoTypeInformation
+Exit 0
