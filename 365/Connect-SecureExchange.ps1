@@ -1,24 +1,27 @@
 # This is for connecting after you've set up a secure app model.
 # See: https://www.cyberdrain.com/automating-with-powershell-using-the-secure-application-model-updates/
 
-# I highly recommend encrypted the file that holds your credentials.
-# I use https://www.keybase.io for this. If you don't use Keybase, you'll need to rework the script.
-# You need some version of .secrets.json.secure that contains necessary info.
-# See secrets-example.json
+# This script will import settings and credentials using the importConfig function I made.
+# See this repo's README.md for details on importing plain text and encrypted config files.
 
-$secretsPath = '.secrets.json.secure'
-$keybasePath = '/usr/local/bin/keybase'
-$secrets = (& $keybasePath decrypt -i $secretsPath) | ConvertFrom-Json
+Param( 
+    [Parameter(Mandatory = $true)] $configFile = '../configs/secureApp.json.secure'
+)
 
 
-##### DO NOT CHANGE ANYTHING BELOW HERE #####
+# ----- DO NOT MODIFY BELOW THIS LINE ----- #
 
-$ApplicationId = $($secrets.SecureApp.ApplicationId)
-$ApplicationSecret = $($secrets.Secureapp.ApplicationSecret) | Convertto-SecureString -AsPlainText -Force
-$TenantID = $($secrets.SecureApp.TenantId)
-$RefreshToken = $($secrets.SecureApp.RefreshToken)
-$ExchangeRefreshToken = $($secrets.SecureApp.ExchangeRefreshToken)
-$upn = $($secrets.SecureApp.UPN)
+# Import the script config
+$config = importConfig $configFile
+
+##### BEGIN SCRIPT ####
+
+$ApplicationId = $($config.ApplicationId)
+$ApplicationSecret = $($config.Secureapp.ApplicationSecret) | Convertto-SecureString -AsPlainText -Force
+$TenantID = $($config.TenantId)
+$RefreshToken = $($config.RefreshToken)
+$ExchangeRefreshToken = $($config.ExchangeRefreshToken)
+$upn = $($config.UPN)
 $credential = New-Object System.Management.Automation.PSCredential($ApplicationId, $ApplicationSecret)
  
 $aadGraphToken = New-PartnerAccessToken -ApplicationId $ApplicationId -Credential $credential -RefreshToken $refreshToken -Scopes 'https://graph.windows.net/.default' -ServicePrincipal -Tenant $tenantID
@@ -39,3 +42,5 @@ foreach ($customer in $customers) {
     # End of Commands
     Remove-PSSession $session
 }
+
+Exit 0
