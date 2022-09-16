@@ -1,36 +1,30 @@
-#Requires -Version 2.0
+# ----- SET PATHS HERE ----- #
+$functionsPath = "/path/to/powershell/functions"
+$configPath = "/path/to/powershell/configs"
 
-<#
-.SYNOPSIS
-    Basic PowerShell profile.
-.DESCRIPTION
-    Standard PowerShell profile deployed to servers.
-.NOTES
-    File Name  : profile.ps1
-    Author     : Adam Albers
-.LINK
-    https://github.com/adamalbers
-    https://blogs.technet.microsoft.com/heyscriptingguy/2013/01/04/understanding-and-using-powershell-profiles/
-#>
 
-# Useful Functions
+# ----- DO NOT MODIFY BELOW THIS LINE ----- #
+Clear-Host
+Write-Host "PowerShell Version: $($PSVersionTable.PSVersion.ToString())"
+Write-Host '------------------------------'
+Write-Host -ForegroundColor Green "Using $PROFILE"
+Write-Host '------------------------------'
+Write-Host -ForegroundColor Green "Functions path: $functionsPath"
+Write-Host -ForegroundColor Green "Configs path: $configsPath"
+Write-Host '------------------------------'
+Write-Host 'Importing $coreFunctions from profile:'
 
-# Get the last boot time. More accurate than the uptime number in Resource Monitor.
-Function uptime {
-  Get-WmiObject Win32_OperatingSystem | Select-Object @{LABEL = 'Computer'; EXPRESSION = { $_.CSName } }, @{LABEL = 'LastBootUpTime'; EXPRESSION = { $_.ConverttoDateTime($_.LastBootUpTime) } }
+# Source checkUnique and importFunction (requires checkUnique).
+. "$($functionsPath)/checkUnique.ps1"
+. "$($functionsPath)/importFunction.ps1"
+
+# Define any other core functions we want.
+$coreFunctions = @('importAllFunctions.ps1',
+                    'importConfig.ps1'
+                )
+
+# Loop through $coreFunctions and source them with importFunction
+$coreFunctions | ForEach-Object {
+    Write-Host -ForegroundColor Green "Importing $_" 
+    importFunction $_
 }
-
-# Settings specific to running as admin
-# Post a warning about running as admin.
-& {
-  $wid = [System.Security.Principal.WindowsIdentity]::GetCurrent()
-  $prp = New-Object System.Security.Principal.WindowsPrincipal($wid)
-  $adm = [System.Security.Principal.WindowsBuiltInRole]::Administrator
-  $IsAdmin = $prp.IsInRole($adm)
-  If ($IsAdmin) {
-    Write-Host "RUNNING AS ADMIN. USE CAUTION." -ForegroundColor "Red"
-  }
-}
-
-# Show uptime before prompt
-uptime

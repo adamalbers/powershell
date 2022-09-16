@@ -1,0 +1,7 @@
+{
+    "refreshToken": "reallyLongRefreshToken",
+    "exchangeRefreshToken": "reallyLongExchangeRefreshToken",
+    "applicationID": "superSecureApplicationId",
+    "applicationSecret": "superDuperSecretApplicationSecret",
+    "upn": "user@example.com"
+}
