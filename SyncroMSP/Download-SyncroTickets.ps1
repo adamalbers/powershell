@@ -1,17 +1,16 @@
 # Download all the SyncroMSP tickets and save them to a JSON file which can be manipulated in other programs.
 
-# Grab settings from syncro.json file in same foler as script.
-# The .gitignore in this repo ignores a file named 'syncro.json' so you won't accidentally upload your info to GitHub.
-# See syncro-example.json
-$syncroSettings = Get-Content syncro.json | ConvertFrom-Json -Depth 100
+# Copy syncro-example.json to syncro.json and modify as necessary.
+# The .gitignore for this repo will ignore any file name 'syncro.json' so you won't accidentally upload your config to GitHub.
+$pathToJSON = "./syncro.json"
+
+##### DO NOT CHANGE ANYTHING BELOW THIS LINE #####
+
+$syncroSettings = Get-Content $pathToJSON | ConvertFrom-Json -Depth 100
 
 $subdomain = "$($syncroSettings.subdomain)" 
 $apiToken = "$($syncroSettings.apiToken)"
-
-$outputPath = '~/Downloads/SyncroMSP-Tickets.json'
-
-
-##### DO NOT CHANGE ANYTHING BELOW THIS LINE #####
+$outputPath = "$($syncroSettings.outputPath)"
 
 $headers = @{
     "Authorization" = "$apiToken"

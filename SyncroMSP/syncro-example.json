@@ -1,4 +1,5 @@
 {
     "subdomain": "example",
-    "apiToken": "reallyLongApiTokenFromSyncro"
+    "apiToken": "reallyLongApiTokenFromSyncro",
+    "outputPath": "~/Downloads/SyncroMSP-Tickets.json"
 }
