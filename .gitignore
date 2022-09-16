@@ -1,4 +1,5 @@
-.secrets.json.secure
-config.json
-syncro.json
-geoip.json
+*.secure
+*.secret
+*.ignore
+*.json
+!*example.json
