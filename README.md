@@ -33,10 +33,10 @@ If you are using the `profiles.ps1` from this repo, you only need to run `import
 
 E.g., If you run `importFunction getUptime` in your console, then you can run `getUptime` in the console for the rest of your session.
 
-## JSON Config Files, .gitignore, and Keybase.
+## JSON Config Files and Keybase.
 
 ### JSON Config Files
-I have started using *.json files to hold settings for these script so that I can keep them generic.  
+I have started using JSON files to hold settings for these script so that I can keep them generic.  
 Generally, don't put anything like a password in a plain text JSON file.  
 
 See the Keybase section below for how I handle encrypting secure configs.
