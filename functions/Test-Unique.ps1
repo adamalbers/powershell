@@ -3,7 +3,7 @@
 
 
 # ----- DO NOT MODIFY BELOW THIS LINE ----- #
-function checkUnique {
+function Test-Unique {
      Param( [Parameter(Mandatory = $true)] $object )
 
      $count = ($object | Measure-Object).Count

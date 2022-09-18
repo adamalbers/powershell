@@ -1,12 +1,12 @@
 # Imports a config JSON into your script.
 # Supported extensions are .json, .secret, and .secure.
-# importConfig will try to decrypt any .secret and .secure files with Keybase.
-# In your script, use 'importConfig [name]'
-# E.g. 'importConfig emailAccount' will search for a config with 'emailAccount' in the file name.
+# Import-Config will try to decrypt any .secret and .secure files with Keybase.
+# In your script, use 'Import-Config [name]'
+# E.g. 'Import-Config emailAccount' will search for a config with 'emailAccount' in the file name.
 
 
 # ----- DO NOT MODIFY BELOW THIS LINE ----- #
-function importConfig {
+function Import-Config {
     # This function imports a .json or .secret (Keybase encrypted JSON) config file and converts it to an object.
     # Requires Keybase to be installed and in your PATH for .secret files.
 

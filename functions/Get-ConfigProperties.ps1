@@ -1,6 +1,6 @@
 # List out the names of properties found in the given config file.
 
-function listConfigProperties {
+function Get-ConfigProperties {
     Param (
         [Parameter(Mandatory)] $thisConfig
     )
