@@ -1,20 +1,51 @@
-#Import-Module $env:SyncroModule
+# This is intended to be run on a client machine via our RMM.
+# It will install our Comet Backups agent and log activity to our RMM.
+# If you don't use SyncroRMM, you'll see some errors but install should still work as long as
+# you define the variables below.
 
+# Import RMM module
+Import-Module $env:SyncroModule
+
+# ----- SET VARIABLES ----- #
+<# We pull all these variables from our RMM. If you don't set these at runtime via your RMM, you need to uncomment this section and define all these variables.
+
+$server = "backups.example.com:443" # You really only need the port if it's NOT 443
 $adminUsername = "admin"
-$adminPassword = "admin"
-$server = "backups.example.com:443" # You really only need the port if it's not 443
+$adminPassword = "superDuperSecretAndLongPassword"
+$cometUsername = "backups@example.com"
+$cometPassword = "fakePassword@34"
+
+#>
+
+# ----- DO NOT MODIFY BELOW THIS LINE ----- #
 $serviceName = "backup.delegate"
 $command = "$Env:Temp\install.exe /CONFIGURE=${cometUsername}:${cometPassword}"
 $zipPath = "$Env:Temp\comet.zip"
 
-# This is the account you want to create for a Comet backups user.
-# I have commented out these lines because we pull them from our RMM.
-#$cometUsername = "backups@example.com"
-#$cometPassword = "fakePassword@34"
 
-# Exit script if either cometUsername or cometPassword are not populated in RMM (or defined above).
-if (($cometUsername -eq $null) -or ($cometPassword -eq $null)) {
-    Write-Output "Please populate the Comet Backups User and Comet Backups Password fields in the customer custom fields before running this script."
+# Exit script if variables not set.
+if (-not $server) {
+    Write-Warning 'Missing $server. Cannot continue.'
+    Exit 1
+}
+
+if (-not $adminUsername) {
+    Write-Warning 'Missing $adminUsername. Cannot continue.'
+    Exit 1
+}
+
+if (-not $adminPassword) {
+    Write-Warning 'Missing $adminPassword. Cannot continue.'
+    Exit 1
+}
+
+if (-not $cometUsername) {
+    Write-Warning 'Missing $cometUsername. Cannot continue.'
+    Exit 1
+}
+
+if (-not $cometPassword) {
+    Write-Warning 'Missing $cometPassword. Cannot continue.'
     Exit 1
 }
 
@@ -48,13 +79,7 @@ if (Get-Service $serviceName -ErrorAction SilentlyContinue) {
 else {
     Write-Output "$serviceName not found. Installing."
     
-    # Function allows us to unzip the file.
-    function Unzip {
-        param([string]$zipFile, [string]$outPath)
-        Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [System.IO.Compression.ZipFile]::ExtractToDirectory($zipFile, $outPath)
-    }
-    Unzip "$zipPath" "$Env:Temp"
+    Expand-Archive -Path "$zipPath" -DestinationPath "$Env:Temp"
     
     Set-Location -Path "$Env:Temp"
     Invoke-Expression $command
@@ -67,6 +92,6 @@ else {
 
 }
 
-#Log-Activity -Message "Installed Comet backups agent." -EventName "Comet Install"
+Log-Activity -Message "Installed Comet backups agent." -EventName "Comet Install"
 
 Exit 0

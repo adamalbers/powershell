@@ -6,7 +6,7 @@ Param(
 
 
 # ----- DO NOT MODIFY BELOW THIS LINE ----- #
-$config = importConfig $configName
+$config = Import-Config $configName
 
 $server = $($config.server)
 $username = $($config.username)
