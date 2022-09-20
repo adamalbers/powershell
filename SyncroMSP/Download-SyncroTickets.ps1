@@ -9,7 +9,7 @@ Param(
 
 # ----- DO NOT MODIFY BELOW THIS LINE ----- #
 Write-Host "Searching for $configName in configs directory."
-$config = importConfig $configName
+$config = Import-Config $configName
 
 Write-Host '------------------------------'
 
@@ -44,7 +44,17 @@ function getTickets {
 
 
 # Check to see if there is already content at $outputPath
-$existingTickets = Get-Content $outputPath -ErrorAction 'SilentlyContinue' | ConvertFrom-Json -Depth 100 | Sort-Object updated_at -Descending
+if ((Test-Path $outputPath -ErrorAction 'SilentlyContinue')) {
+    # Have to use Get-ChildItem first because [System.IO.File] won't like a relative path.
+    $file = (Get-ChildItem -Path $outputPath).FullName
+    $reader = [System.IO.File]::OpenText($file)
+    $existingTickets = $reader.ReadToEnd() | ConvertFrom-Json -Depth 100 | Sort-Object updated_at -Descending
+    $reader.Close()
+}
+else {
+    Write-Host "Did not find any existing $outputPath."
+}
+
 
 if ($existingTickets) {
     $lastUpdated = (Get-Date $existingTickets[0].updated_at -Format yyyy-MM-dd).ToString()
