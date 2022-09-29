@@ -1,0 +1,6 @@
+{
+    "keeperCliPath": "/path/to/keeper.exe",
+    "keeperConfig": "/path/to/.keeper/config.json",
+    "destinationDir": "/path/to/backup/dir",
+    "keepassFilePassword": "reallyLongPassword"
+}
