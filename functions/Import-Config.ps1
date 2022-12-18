@@ -20,7 +20,7 @@ function Import-Config {
         return
     }
    
-    $configFile = Get-ChildItem -Path $configsPath -Filter "*$($configName)*" -ErrorAction 'SilentlyContinue' | Where-Object {$_.Name -notmatch 'example'}
+    $configFile = Get-ChildItem -Path $configsPath -Filter "*$($configName)*" -ErrorAction 'SilentlyContinue' | Where-Object { $_.Name -notmatch 'example' }
 
     if (-not $configFile) {
         Write-Warning "Could not find any file matching `'$configName`' in $configsPath."
@@ -29,26 +29,26 @@ function Import-Config {
 
     Write-Host -ForegroundColor Green '#----- CONFIG IMPORT -----#'
     
-    $unique = checkUnique $configFile
+    $unique = Test-Unique $configFile
 
     if (-not $unique) {
         Write-Warning "Found more than one file matching $($configName):"
         $configFile | ForEach-Object { Write-Host $_.FullName }
-        Write-Warning "Please narrow your search and try again."
+        Write-Warning 'Please narrow your search and try again.'
         return
     }
 
     if ($unique) {
         if (($($configFile.Name) -match '.secret') -or ($($configFile.Name) -match '.secure')) {
-            if (-not (Get-Command keybase)) {
-                Write-Warning "keybase does not seem to be in your PATH. Cannot decrypt config file."
+            if (-not (Get-Command gpg)) {
+                Write-Warning 'gpg does not seem to be in your PATH. Cannot decrypt config file.'
                 return
             }
             
             try {
                 Write-Host "Attempting to import encrypted file: $($configFile.Name)."
-                $configInfo = (& keybase decrypt -i $($configFile.FullName)) | ConvertFrom-Json -Depth 100
-                Write-Host -ForegroundColor Green "Success"
+                $configInfo = (& gpg --decrypt $($configFile.FullName)) | ConvertFrom-Json -Depth 100
+                Write-Host -ForegroundColor Green 'Success'
                 return $configInfo
             } 
             catch {
@@ -63,8 +63,8 @@ function Import-Config {
             try {
                 Write-Host "Attempting to import unencrypted file: $($configFile.Name)."
                 $configInfo = Get-Content $($configFile.FullName) | ConvertFrom-Json -Depth 100
-                Write-Host -ForegroundColor Green "Success"
-            return $configInfo
+                Write-Host -ForegroundColor Green 'Success'
+                return $configInfo
             }
             catch {
                 Write-Warning $_
