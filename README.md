@@ -39,14 +39,14 @@ E.g., If you run `importFunction getUptime` in your console, then you can run `g
 I have started using JSON files to hold settings for these script so that I can keep them generic.  
 Generally, don't put anything like a password in a plain text JSON file.  
 
-See the Keybase section below for how I handle encrypting secure configs.
+See the GPG section below for how I handle encrypting secure configs.
 
 
-### Keybase
-**Keybase decryption is NOT for running unattended scripts.**
+### GPG
+**GPG decryption is NOT for running unattended scripts.**
 
-I use [Keybase](https://www.keybase.io) to encrypt some of my JSON config files. I use the `.secret` extension for this.  
+I use [GPG](https://gpgtools.org) to encrypt some of my JSON config files. I use the `.secret` extension for this.  
 
 I have begun adding a function to some scripts, where if the config ends in `.secret` e.g., `syncro.json.secret`, then the script will assume it is encrypted with Keybase and will try to decrypt it using Keybase.  
 
-With Keybase installed and in my environment's PATH variable (it is by default), I can run `& keybase decrypt -i $secretsPath | ConvertFrom-Json -Depth 100` and Keybase will decrypt the file using my Keybase account.
+With GPG installed and in my environment's PATH variable (it is by default), I can run `& gpg --decrypt $secretsPath | ConvertFrom-Json -Depth 100` and GPG will decrypt the file using my private key.
