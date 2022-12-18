@@ -1,5 +1,7 @@
 {
     "subdomain": "example",
     "apiToken": "reallyLongApiTokenFromSyncro",
-    "outputPath": "~/Downloads/SyncroMSP-Tickets.json"
+    "ticketsPath": "~/Downloads/SyncroMSP-Tickets.json",
+    "customersPath": "~/Downloads/SyncroMSP-Customers.json",
+    "timeEntriesPath": "~/Downloads/SyncroMSP-TimeEntries.json"
 }
