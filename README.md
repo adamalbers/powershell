@@ -6,14 +6,14 @@ Original authors are credited where their code was used.
 
 ## PowerShell Profile
 
-To make the best use of this repo, copy the contents of `profile.ps1` in this repo to the [appropriate PowerShell profile](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7.2).
+To make the best use of this repo, copy the contents of `profile.ps1` in this repo to the [appropriate PowerShell profile](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles).
 
 I generally just use `$PROFILE`:
 - On Windows `$PROFILE` = `$Home\Documents\PowerShell\Microsoft.PowerShell_profile.ps1`
 - On Mac `$PROFILE` = `~/.config/powershell/Microsoft.Powershell_profile.ps1`
 - On Linux `$PROFILE` = `~/.config/powershell/Microsoft.Powershell_profile.ps1`
 
-`$PROFILE` is the "Current User, Current Host" which means the console you are running in. The other profiles mentioned in the [full documentation](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7.2) are more for scheduled tasks or running scripts via your RMM.
+`$PROFILE` is the "Current User, Current Host" which means the console you are running in. The other profiles mentioned in the [full documentation](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles) are more for scheduled tasks or running scripts via your RMM.
 
 ## .gitignore
 .gitignore goes in the root of your git repo. It tells git to ignore any file with the listed pattern. 
@@ -27,11 +27,9 @@ Check the .gitignore file itself for the most up to date ignores, but in general
 Exceptions can be made with the `!` meaning "not." One exception I am using is `!*example.json` so something like `config-example.json` will still appear in the repo but `config-example.json.secure` would not becauase of the `.secure`.
 
 ## Functions
-I created a `functions` folder to hold some code that is used repeatedly.  
+I created a `functions` folder to hold some code that is used repeatedly.
 
-If you are using the `profiles.ps1` from this repo, you only need to run `importFunction example` to add that function to your script or console session.
-
-E.g., If you run `importFunction getUptime` in your console, then you can run `getUptime` in the console for the rest of your session.
+If you are using the `profiles.ps1` from this repo, it will automatically import all of the functions in the `$functionsPath` directory that is defined at the top of `profiles.ps1`.
 
 ## JSON Config Files and Keybase.
 
