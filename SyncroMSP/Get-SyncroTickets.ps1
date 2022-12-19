@@ -1,6 +1,7 @@
 # Download all the SyncroMSP tickets and save them to a JSON file which can be manipulated in other programs.
 
 # Copy syncro-example.json to syncro.json and modify as necessary.
+# Better yet, encrypt it to syncro.json.secret with Keybase.
 # The .gitignore for this repo will ignore any file name 'syncro.json' so you won't accidentally upload your config to GitHub.
 
 Param( 
@@ -8,23 +9,23 @@ Param(
 )
 
 # ----- DO NOT MODIFY BELOW THIS LINE ----- #
-Write-Host "Searching for $configName in configs directory."
+Write-Host "Searching for $configName in $configsPath."
 $config = Import-Config $configName
 
 Write-Host '------------------------------'
 
 if (-not $config) {
-    Write-Host -ForegroundColor Red "Could not import config. Exiting."
+    Write-Host -ForegroundColor Red 'Could not import config. Exiting.'
     Exit 1
 }
 
 $subdomain = "$($config.subdomain)" 
 $apiToken = "$($config.apiToken)"
-$outputPath = "$($config.outputPath)"
+$outputPath = "$($config.ticketsPath)"
 
 $headers = @{
-    "Authorization" = "$apiToken"
-    "Accept"        = "application/json"
+    'Authorization' = "$apiToken"
+    'Accept'        = 'application/json'
 }
 
 $urlBase = "https://$subdomain.syncromsp.com/api/v1/"
@@ -47,9 +48,10 @@ function getTickets {
 if ((Test-Path $outputPath -ErrorAction 'SilentlyContinue')) {
     # Have to use Get-ChildItem first because [System.IO.File] won't like a relative path.
     $file = (Get-ChildItem -Path $outputPath).FullName
-    $reader = [System.IO.File]::OpenText($file)
-    $existingTickets = $reader.ReadToEnd() | ConvertFrom-Json -Depth 100 | Sort-Object updated_at -Descending
-    $reader.Close()
+    #$reader = [System.IO.File]::OpenText($file)
+    #$existingTickets = $reader.ReadToEnd() | ConvertFrom-Json -Depth 100 | Sort-Object updated_at -Descending
+    #$reader.Close()
+    $existingTickets = Get-FileContent $file
 }
 else {
     Write-Host "Did not find any existing $outputPath."
@@ -72,7 +74,8 @@ do {
     $totalPages = $results.meta.total_pages
     $newTickets += $results.tickets
     $currentPage++
-    Write-Host "Sleeping 500ms because of Syncro API rate limits."
+    
+    # Sleep 500ms because of Syncro API rate limits.
     Start-Sleep -Milliseconds 500
 } while ($currentPage -le $totalPages)
 
