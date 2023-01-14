@@ -1,10 +1,10 @@
 # ----- SET PATHS HERE ----- #
-$functionsPath = "/path/to/powershell/functions"
-$configPath = "/path/to/powershell/configs"
+$functionsPath = '/path/to/powershell/functions'
+$configPath = '/path/to/powershell/configs'
 
 
 # ----- DO NOT MODIFY BELOW THIS LINE ----- #
-Clear-Host
+Clear-Host # Clear the default output before we write our own.
 Write-Host '#----- Loading Profile -----#'
 Write-Host "PowerShell Version: $($PSVersionTable.PSVersion.ToString())"
 Write-Host '------------------------------'
@@ -13,20 +13,17 @@ Write-Host '------------------------------'
 Write-Host -ForegroundColor Green "Functions path: $functionsPath"
 Write-Host -ForegroundColor Green "Configs path: $configsPath"
 Write-Host '------------------------------'
-Write-Host 'Importing $coreFunctions from profile:'
+Write-Host 'Importing functions:'
 
-# Define any other core functions we want.
-# Both importFunction and importConfig require checkUnique.
-$coreFunctions = @('checkUnique.ps1',
-                    'importFunction.ps1',
-                    'importConfig.ps1'
-                )
+# ----- IMPORT ALL FUNCTIONS ----- #
+$functions = (Get-ChildItem -Path $functionsPath -Filter '*.ps1' -Recurse).FullName
 
-# Loop through $coreFunctions and source them with importFunction
-$coreFunctions | ForEach-Object {
+# Loop through $functions and source them
+$functions | ForEach-Object {
     Write-Host -ForegroundColor Green "Importing $_" 
-    . "$($functionsPath)/$($_)"
+    . "$_"
 }
+
 
 Write-Host '------------------------------'
 Write-Host '#----- Profile Loaded -----#'
