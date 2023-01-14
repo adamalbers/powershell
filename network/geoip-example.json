@@ -1,7 +1,0 @@
-{
-    "pathToIPFile": "~/clientIpList.txt",
-    "pathToMMDBInspect": "/opt/homebrew/bin/mmdbinspect",
-    "pathToMaxMindCityDB": "/opt/homebrew/var/GeoIP/GeoLite2-City.mmdb",
-    "pathToMaxMindASNDB": "/opt/homebrew/var/GeoIP/GeoLite2-ASN.mmdb",
-    "outputPath": "~/clientIpLocations.csv"
-}

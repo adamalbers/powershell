@@ -4,19 +4,19 @@
 # Copy geoip-example.json to syncro.json and modify as necessary.
 # The .gitignore for this repo will ignore any file name 'geoip.json' so you won't accidentally upload your config to GitHub.
 
-$pathToJSON = "./geoip.json"
+$pathToJSON = '../configs/geoip.json'
 
 ###### DO NOT CHANGE ANYTHING BELOW THIS LINE ######
 
 $config = Get-Content $pathToJSON | ConvertFrom-Json -Depth 100
 $pathToIPFile = $($config.pathToIPFile)
-$pathToMMDBInspect = $($config.$pathToMMDBInspect)
-$pathToMaxMindCityDB = $($config.$pathToMaxMindCityDB)
-$pathToMaxMindASNDB = $($config.$pathToMaxMindASNDB)
+$pathToMMDBInspect = $($config.pathToMMDBInspect)
+$pathToMaxMindCityDB = $($config.pathToMaxMindCityDB)
+$pathToMaxMindASNDB = $($config.pathToMaxMindASNDB)
 $outputPath = $($config.outputPath)
 
 
-$ips = Get-Content $pathToIPFile | Select-Object -Unique | Sort-Object
+$ips = (Get-Content $pathToIPFile).Trim() | Select-Object -Unique | Sort-Object
 
 # Overwrite any existing $outputPath with an empty file
 New-Item $outputPath -Force
