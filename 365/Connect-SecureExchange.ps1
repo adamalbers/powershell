@@ -1,7 +1,7 @@
 # This is for connecting after you've set up a secure app model.
 # See: https://www.cyberdrain.com/automating-with-powershell-using-the-secure-application-model-updates/
 
-# This script will import settings and credentials using the importConfig function I made.
+# This script will import settings and credentials using the Import-Config function I made.
 # See this repo's README.md for details on importing plain text and encrypted config files.
 
 Param( 
@@ -12,7 +12,7 @@ Param(
 # ----- DO NOT MODIFY BELOW THIS LINE ----- #
 
 # Import the script config
-$config = importConfig $configFile
+$config = Import-Config $configFile
 
 ##### BEGIN SCRIPT ####
 

@@ -50,28 +50,28 @@ function Import-Function {
     
     # If only one file matched, try to source the .ps1 file.
     if ($unique) {
-          Write-Host "Found $($functionFile.Name) in $functionsPath." 
+        Write-Host "Found $($functionFile.Name) in $functionsPath." 
     
         try { 
             Write-Host "Attempting to import $($functionFile.Name)."
             
             # Use a wrapper to make sure the function is available in the global scope.
             # See: https://stackoverflow.com/questions/15187510/dot-sourcing-functions-from-file-to-global-scope-inside-of-function
-            $script = Get-Content -Path $functionFile
+            $script = Get-Content -Path $($functionFile.FullName)
             $script = $script -replace '^function\s+((?!global[:]|local[:]|script[:]|private[:])[\w-]+)', 'function Global:$1'
             $function = ([ScriptBlock]::Create($script))
 
             $function -split [Environment]::NewLine
             
             # Dot source the function. This is the actual import step.
-            . $function
+            return $function
             
             Write-Host -ForegroundColor Green "Succes"
         }
         catch {
             Write-Warning $_
             return
-         }
+        }
     }
     return    
 }
