@@ -22,6 +22,7 @@ if (-not $config) {
 $subdomain = "$($config.subdomain)" 
 $apiToken = "$($config.apiToken)"
 $outputPath = "$($config.ticketsPath)"
+$tickets = @()
 
 $headers = @{
     'Authorization' = "$apiToken"

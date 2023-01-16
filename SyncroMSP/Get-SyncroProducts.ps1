@@ -15,8 +15,8 @@ if (-not $config) {
 
 $subdomain = "$($config.subdomain)" 
 $apiToken = "$($config.apiToken)"
-$outputPath = "$($config.customersPath)"
-$customers = @()
+$outputPath = "$($config.productsPath)"
+$products = @()
 
 $headers = @{
     'Authorization' = "$apiToken"
@@ -29,18 +29,21 @@ $page = 1
 $totalPages = 2
 
 do {
-    $response = Invoke-RestMethod -Uri "$urlBase/customers?page=$page" -Headers $headers
+    Write-Host -ForegroundColor Green "Downloading page $page of $totalPages."
+    $response = Invoke-RestMethod -Uri "$urlBase/products?page=$page" -Headers $headers
     $totalPages = $response.meta.total_pages
-    $customers += $response.customers
+    $products += $response.products
     $page ++
     
     # Sleep 500ms because of Syncro API rate limits.
     Start-Sleep -Milliseconds 500
 } while ($page -le $totalPages)
 
-$customers = $customers | Sort-Object business_name
+$products = $products | Sort-Object id
 
 Write-Host -ForegroundColor Green "`n#----- DOWNLOAD COMPLETE -----#"
 Write-Host '------------------------------'
 Write-Host "Saving to $outputPath"
-$customers | ConvertTo-Json -Depth 100 | Out-File $outputPath
+$products | ConvertTo-Json -Depth 100 | Out-File $outputPath
+
+Exit 0
