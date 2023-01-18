@@ -18,8 +18,8 @@ $jailConfPath = '/home/user/jail.conf.d/jail.conf'
 ###### DO NOT CHANGE ANYTHING BELOW THIS LINE #########
 
 $headers = @{
-    "Authorization" = "$syncroAPIToken"
-    "Accept"        = "application/json"
+    'Authorization' = "$syncroAPIToken"
+    'Accept'        = 'application/json'
 }
 
 $syncroURLBase = "https://$syncroSubdomain.syncromsp.com/api/v1"
@@ -37,7 +37,7 @@ function getSyncroAssets {
         Exit 1
     }
 
-    Write-Host -ForegroundColor Green "Getting assets from Syncro..."
+    Write-Host -ForegroundColor Green 'Getting assets from Syncro...'
 
     $syncroAssets = New-Object System.Collections.Generic.List[System.Object]
     
@@ -68,3 +68,5 @@ $pbxAllowListIPs = $pbxAllowListIPs | Sort-Object
 # SSH to server, replace the 'ignoreip =' line in $jailConfPath
 $date = (Get-Date -Format yyyy-MM-dd_hh_ss).ToString()
 & ssh -t ampsys@ampsys-pbx.ampsyscloud.com "cp $jailConfPath $jailConfPath-$date.bak`;sed -i \`"s#ignoreip =.*#ignoreip = $pbxAllowListIPs#g\`" $jailConfPath"
+
+Exit 0

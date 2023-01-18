@@ -5,8 +5,8 @@ Import-Module ActiveDirectory
 $csvPath = "$Env:SystemDrive/AMP/Scripts/ADPasswordReset.csv"
 # Import users and passwords from CSV
 Import-Csv $csvPath | ForEach-Object {
-    $samAccountName = $_."samAccountName"
-    $newPassword = $_."password"
+    $samAccountName = $_.'samAccountName'
+    $newPassword = $_.'password'
   
     # Reset user password.
     Set-ADAccountPassword -Identity $samAccountName -Reset -NewPassword (ConvertTo-SecureString -AsPlainText $newPassword -Force)
@@ -16,5 +16,7 @@ Import-Csv $csvPath | ForEach-Object {
     Set-AdUser -Identity $samAccountName -ChangePasswordAtLogon $true
 
     # Output each user being reset
-    Write-Host "AD Password has been reset for: "$samAccountName
+    Write-Host 'AD Password has been reset for: '$samAccountName
 }
+
+Exit 0

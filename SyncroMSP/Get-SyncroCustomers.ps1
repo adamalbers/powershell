@@ -44,3 +44,5 @@ Write-Host -ForegroundColor Green "`n#----- DOWNLOAD COMPLETE -----#"
 Write-Host '------------------------------'
 Write-Host "Saving to $outputPath"
 $customers | ConvertTo-Json -Depth 100 | Out-File $outputPath
+
+Exit 0

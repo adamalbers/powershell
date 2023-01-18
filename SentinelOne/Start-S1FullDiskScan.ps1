@@ -6,10 +6,10 @@ $apiURL = 'https://subdomain.sentinelone.net/web/api/v2.1/agents/actions/initiat
 $apiToken = 'SuperLongSuperSecretAPIToken'
 
 $headers = @{
-  "Authorization" = "apitoken $apiToken"
+  'Authorization' = "apitoken $apiToken"
 }
 
-$body = @"
+$body = @'
 {
     "filter": {
         "groupIds": [
@@ -18,8 +18,10 @@ $body = @"
         },
       "data": {}
 }
-"@
+'@
 
 $response = Invoke-RestMethod -Uri "$apiURL" -Method POST -Body $body -ContentType 'application/json' -Headers $headers
 
 Write-Output $response.data
+
+Exit 0

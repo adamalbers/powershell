@@ -20,20 +20,20 @@ foreach ($i in $log) {
     # Local (Logon Type 2) 
     if (($i.EventID -eq 4624 ) -and ($i.ReplacementStrings[8] -eq 2)) { 
         $event = New-Object –TypeName PSObject
-        $event | Add-Member –MemberType NoteProperty –Name Type -Value "Local"
+        $event | Add-Member –MemberType NoteProperty –Name Type -Value 'Local'
         $event | Add-Member –MemberType NoteProperty –Name Date -Value $i.TimeGenerated
-        $event | Add-Member –MemberType NoteProperty –Name Success -Value "Success"
+        $event | Add-Member –MemberType NoteProperty –Name Success -Value 'Success'
         $event | Add-Member –MemberType NoteProperty –Name User -Value $i.ReplacementStrings[5]
-        $event | Add-Member –MemberType NoteProperty –Name IP -Value ""
+        $event | Add-Member –MemberType NoteProperty –Name IP -Value ''
  
         $events.Add($event) | Out-Null 
     } 
     # Remote (Logon Type 10) 
     if (($i.EventID -eq 4624 ) -and ($i.ReplacementStrings[8] -eq 10)) { 
         $event = New-Object –TypeName PSObject
-        $event | Add-Member –MemberType NoteProperty –Name Type -Value "Remote"
+        $event | Add-Member –MemberType NoteProperty –Name Type -Value 'Remote'
         $event | Add-Member –MemberType NoteProperty –Name Date -Value $i.TimeGenerated
-        $event | Add-Member –MemberType NoteProperty –Name Success -Value "Success"
+        $event | Add-Member –MemberType NoteProperty –Name Success -Value 'Success'
         $event | Add-Member –MemberType NoteProperty –Name User -Value $i.ReplacementStrings[5]
         $event | Add-Member –MemberType NoteProperty –Name IP -Value $i.ReplacementStrings[18]
             
@@ -44,20 +44,20 @@ foreach ($i in $log) {
     # Local 
     if (($i.EventID -eq 4625 ) -and ($i.ReplacementStrings[10] -eq 2)) { 
         $event = New-Object –TypeName PSObject
-        $event | Add-Member –MemberType NoteProperty –Name Type -Value "Local"
+        $event | Add-Member –MemberType NoteProperty –Name Type -Value 'Local'
         $event | Add-Member –MemberType NoteProperty –Name Date -Value $i.TimeGenerated
-        $event | Add-Member –MemberType NoteProperty –Name Success -Value "Failure"
+        $event | Add-Member –MemberType NoteProperty –Name Success -Value 'Failure'
         $event | Add-Member –MemberType NoteProperty –Name User -Value $i.ReplacementStrings[5]
-        $event | Add-Member –MemberType NoteProperty –Name IP -Value ""
+        $event | Add-Member –MemberType NoteProperty –Name IP -Value ''
             
         $events.Add($event) | Out-Null
     } 
     # Remote 
     if (($i.EventID -eq 4625 ) -and ($i.ReplacementStrings[10] -eq 10)) { 
         $event = New-Object –TypeName PSObject
-        $event | Add-Member –MemberType NoteProperty –Name Type -Value "Remote"
+        $event | Add-Member –MemberType NoteProperty –Name Type -Value 'Remote'
         $event | Add-Member –MemberType NoteProperty –Name Date -Value $i.TimeGenerated
-        $event | Add-Member –MemberType NoteProperty –Name Success -Value "Failure"
+        $event | Add-Member –MemberType NoteProperty –Name Success -Value 'Failure'
         $event | Add-Member –MemberType NoteProperty –Name User -Value $i.ReplacementStrings[5]
         $event | Add-Member –MemberType NoteProperty –Name IP -Value $i.ReplacementStrings[19]
             
@@ -67,14 +67,16 @@ foreach ($i in $log) {
     # Logoff Events 
     if ($i.EventID -eq 4647 ) { 
         $event = New-Object –TypeName PSObject
-        $event | Add-Member –MemberType NoteProperty –Name Type -Value "Logoff"
+        $event | Add-Member –MemberType NoteProperty –Name Type -Value 'Logoff'
         $event | Add-Member –MemberType NoteProperty –Name Date -Value $i.TimeGenerated
-        $event | Add-Member –MemberType NoteProperty –Name Success -Value "Success"
+        $event | Add-Member –MemberType NoteProperty –Name Success -Value 'Success'
         $event | Add-Member –MemberType NoteProperty –Name User -Value $i.ReplacementStrings[1]
-        $event | Add-Member –MemberType NoteProperty –Name IP -Value ""
+        $event | Add-Member –MemberType NoteProperty –Name IP -Value ''
             
         $events.Add($event) | Out-Null
     }
 }
 
-$events | Export-CSV $outputFile
+$events | Export-Csv $outputFile
+
+Exit 0

@@ -64,6 +64,4 @@ else {
     Write-Output "No certificates expiring in $daysToAlert or fewer days."
 }
 
-
-
 Exit 0

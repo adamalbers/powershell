@@ -25,5 +25,7 @@ foreach ($url in $downloadList) {
 	#Download the file using the WebClient 
 	$client.DownloadFile($url, $file)
 
-	Write-Host "Done."
+	Write-Host 'Done.'
 }
+
+Exit 0

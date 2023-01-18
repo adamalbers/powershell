@@ -11,7 +11,7 @@
 
 $currentDate = Get-Date
 $pastDueDate = (Get-Date).AddHours(-24)
-$logName = "Macrium Reflect/Operational"
+$logName = 'Macrium Reflect/Operational'
 $eventIDs = 278, 290
 $backupOverdue = $false
 
@@ -22,4 +22,4 @@ If ($lastSuccessEvent.TimeCreated -lt $pastDueDate) {
 }
 
 Write-Output $backupOverdue
-Exit
+Exit 0

@@ -23,13 +23,15 @@ Function CleanLogfiles($TargetFolder) {
         $LastWrite = (Get-Date).AddDays(-$days)
         $Files = Get-ChildItem $TargetFolder -Include *.log, *.blg, *.etl, *.txt -Recurse | Where-Object { $_.LastWriteTime -le "$LastWrite" }
         foreach ($File in $Files)
-        { Write-Host "Deleting file $File" -ForegroundColor "white"; Remove-Item $File -ErrorAction SilentlyContinue | out-null }
+        { Write-Host "Deleting file $File" -ForegroundColor 'white'; Remove-Item $File -ErrorAction SilentlyContinue | Out-Null }
     }
     Else {
-        Write-Host "The folder $TargetFolder doesn't exist! Check the folder path!" -ForegroundColor "white"
+        Write-Host "The folder $TargetFolder doesn't exist! Check the folder path!" -ForegroundColor 'white'
     }
 }
 CleanLogfiles($IISLogPath)
 CleanLogfiles($ExchangeLoggingPath)
 CleanLogfiles($ETLLoggingPath)
 CleanLogfiles($ETLLoggingPath2)
+
+Exit 0

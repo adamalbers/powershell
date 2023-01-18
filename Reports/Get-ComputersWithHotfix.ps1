@@ -12,4 +12,4 @@ ForEach ($computer in $computers) {
     
 }
 
-
+Exit 0
