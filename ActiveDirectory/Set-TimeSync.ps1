@@ -26,3 +26,5 @@ ForEach ($computer in $computerList) {
         $computer.Name | Out-File $mismatchListFile -Append
     }
 }
+
+Exit 0
