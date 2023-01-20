@@ -102,8 +102,8 @@ function Convert-SyncroAssetsToXlsx {
         }
 
         # System Partition
-        $object | Add-Member -MemberType NoteProperty -Name os_disk_size -Value $asset.properties.kabuto_information.system_partition.size_gb
-        $object | Add-Member -MemberType NoteProperty -Name os_disk_free -Value $asset.properties.kabuto_information.system_partition.free_gb
+        $object | Add-Member -MemberType NoteProperty -Name os_disk_size_gb -Value $asset.properties.kabuto_information.system_partition.size_gb
+        $object | Add-Member -MemberType NoteProperty -Name os_disk_free_gb -Value $asset.properties.kabuto_information.system_partition.free_gb
         $object | Add-Member -MemberType NoteProperty -Name os_disk_free_percent -Value $asset.properties.kabuto_information.system_partition.free_percent
 
         # Manufacturer
