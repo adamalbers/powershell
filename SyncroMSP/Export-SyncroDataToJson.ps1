@@ -1,5 +1,5 @@
 Param( 
-    $ConfigName = 'syncro.json.secret',
+    $ConfigName,
     $OutputFolder,
     $ApiToken,
     $Subdomain,
@@ -22,7 +22,7 @@ function Get-SyncroConfig {
 function Get-Response {
     Param (
         [Parameter(Mandatory)] $apiEndpoint,
-        [Parameter(Mandatory)] $page,
+        $page,
         $totalPages
     )
 
@@ -35,15 +35,16 @@ function Get-Response {
     $url = "${urlBase}/${apiEndpoint}"
 
     if ($page -eq 1) {
-        Write-Host -ForegroundColor Green "Requesting page $page of `'${apiEndpoint}`' from ${url} ..."
+        Write-Host -ForegroundColor Green "Requesting `'${apiEndpoint}`' data from ${url} ..."
     }
 
-    if ($page -gt 1) {
+    if ($totalPages) {
+        $url = "${url}?page=${page}"
         Write-Host -ForegroundColor Green "Downloading page $page of $totalPages."
     }
     
     try {
-        $response = Invoke-RestMethod -Uri "${url}?page=${page}" -Headers $headers
+        $response = Invoke-RestMethod -Uri "${url}" -Headers $headers
     }
     catch {
         $message = $($_.Exception.Message)
@@ -63,11 +64,17 @@ function Get-Response {
     if (-not $($response.meta)) {
         # Syncro returns the notes field as 'Notes' or 'notes' sometimes and the different case will screw up the import.
         # Do some regex to make sure all the key names are lowercase.
-        $response = $response | ConvertFrom-Json -Depth 100 -AsHashtable | ConvertTo-Json -Depth 100
-        $response = [regex]::Replace($response, '(?<=")(.+)(?=":)', { $args[0].Groups[1].Value.ToLower() }) | ConvertFrom-Json -Depth 100
+        $ErrorActionPreference = 'SilentlyContinue'
+        $cleanedResponse = $response | ConvertFrom-Json -Depth 100 -AsHashtable | ConvertTo-Json -Depth 100
+        $cleanedResponse = [regex]::Replace($cleanedResponse, '(?<=")(.+)(?=":)', { $args[0].Groups[1].Value.ToLower() }) | ConvertFrom-Json -Depth 100
+        $ErrorActionPreference = 'SilentlyContinue'
+        
+        # Use $cleanedResponse only if it worked
+        if ($cleanedResponse) {
+            $response = $cleanedResponse
+        }
     }
     
-
     return $response
 }
 
@@ -80,32 +87,54 @@ function Export-SyncroDataToJSON {
 
     $results = @()
     $page = 1
-    $totalPages = 1
 
     # Make sure the $OutputFolder exists before we try to download all this stuff.
     if (-not (Test-Path $OutputFolder)) {
         Write-Host -ForegroundColor Red "`nConfigured output folder not found:"
         Write-Host -ForegroundColor Cyan "$OutputFolder`n"
+        Write-Host -ForegroundColor Red "`nPlease check spelling and create $OutputFolder if needed.`n"
+        Exit 1
     }
 
     Write-Host -ForegroundColor Cyan "Requesting data from Syncro using the `'$apiEndpoint`' API endpoint...`n"
 
+    $response = $response = Get-Response $apiEndpoint $page
+    $page++
+
+    if ($($response.meta)) {
+        $totalPages = $response.meta.total_pages
+        # Find the name of the data field in the response e.g. assets,invoices,customers
+        $dataName = ($response | Get-Member | Where-Object { $_.MemberType -eq 'NoteProperty' -and $_.Name -ne 'meta' }).Name
+        $results += $response.$dataName
+    }
+    
+    if (-not $($response.meta)) {
+        $dataName = $apiEndpoint
+        $results += $response
+    }
+
+    # Create UPPERCASE $dataName for use in some output
+    $dataNameUpper = $($dataName.ToUpper())
+
+    # Download all pages if more than 1 page of results exists.
     do {
         # Query the Syncro API
         $response = $response = Get-Response $apiEndpoint $page $totalPages
-    
-        $totalPages = $response.meta.total_pages
-        $results += $response.$dataName
-    
+        
+        if ($($response.meta)) {
+            $totalPages = $response.meta.total_pages
+            $results += $response.$dataName
+        }
+        
+        if (-not $($response.meta)) {
+            $results += $response.$dataName
+        }
+        
         $page ++
     
         # Sleep 400ms because of Syncro API rate limits.
         Start-Sleep -Milliseconds 400
-    } while ($page -le $totalPages)
-
-    # Find the name of the data field in the response e.g. assets,invoices,customers
-    $dataName = ($response | Get-Member | Where-Object { $_.MemberType -eq 'NoteProperty' -and $_.Name -ne 'meta' }).Name
-    $dataNameUpper = $($dataName.ToUpper())
+    } while ($totalPages -and $page -le $totalPages)
     
     # Set JSON export path
     $subfolder = "${OutputFolder}/${dataName}"
@@ -118,15 +147,21 @@ function Export-SyncroDataToJSON {
     Write-Host -ForegroundColor Green "`nExporting $dataNameUpper to `'$outputPath`'`n"
     $results | ConvertTo-Json -Depth 100 | Out-File $outputPath
 
-    $finished = "Finished exporting $dataNameUpper."
+    Write-Host "Finished exporting $dataNameUpper.`n"
     
-    return $finished
+    return $response
 }
 
-Write-Host "Searching for $ConfigName in $configsPath."
-$config = Import-Config $ConfigName
+if (-not $ConfigName) {
+    $ConfigName = Read-Host 'Enter name of config file e.g. syncro.json.secret or press Enter to manually input values'
+}
 
-Write-Host '------------------------------'
+if ($ConfigName) {
+    Write-Host "Searching for $ConfigName in $configsPath."
+    $config = Import-Config $ConfigName -ErrorAction 'SilentlyContinue'
+}
+
+Write-Host "------------------------------`n"
 
 if (-not $config) {
     Write-Host -ForegroundColor Red "`nCould not import config. Will prompt for values.`n"
@@ -141,13 +176,16 @@ foreach ($key in $ParameterList.keys) {
     $varValue = $($var.Value)
     
     # Look for a value in the config file
-    if (-not $varValue -and $config) {
-        Write-Host -ForegroundColor Cyan "`$$varName not defined. Looking for value in config file: $ConfigName"
+    if (-not $varValue -and $($config.$varName)) {
+        Write-Host -ForegroundColor Cyan "`$$varName found in $ConfigName"
         $varValue = Get-SyncroConfig $varName
         Set-Variable -Name $varName -Value $varValue
     }
 
     if (-not $varValue) {
+        Write-Host 'The variable ' -NoNewline
+        Write-Host "`$${varName}" -NoNewline
+        Write-Host ' is not defined.'
         $varValue = Read-Host "Enter value for ${varName}"
         Set-Variable -Name $varName -Value $varValue
     }
@@ -158,8 +196,9 @@ $ApiEndpoints = $ApiEndpoints -split ','
 
 # Loop through all $ApiEndpoints and export the data
 foreach ($apiEndpoint in $ApiEndpoints) {
-    $exportResult = Export-SyncroDataToJSON $apiEndpoint
-    Write-Host -ForegroundColor Cyan "$exportResult`n"
+    Export-SyncroDataToJSON $apiEndpoint | Out-Null
 }
+
+Write-Host -ForegroundColor Green "`n`n##### FINISHED #####`n`n"
 
 Exit 0
