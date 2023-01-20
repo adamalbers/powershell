@@ -145,11 +145,12 @@ function Export-SyncroDataToJSON {
 
     # Export data
     Write-Host -ForegroundColor Green "`nExporting $dataNameUpper to `'$outputPath`'`n"
-    $results | ConvertTo-Json -Depth 100 | Out-File $outputPath
+    $resultsJson = $results | ConvertTo-Json -Depth 100 
+    $resultsJson | Out-File $outputPath
 
     Write-Host "Finished exporting $dataNameUpper.`n"
     
-    return $response
+    return $results
 }
 
 if (-not $ConfigName) {
